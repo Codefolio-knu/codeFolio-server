@@ -1,0 +1,89 @@
+server:
+  port: ${SPRING_PORT}
+  servlet:
+    session:
+      cookie:
+        same-site: none
+        secure: false
+  error:
+    include-stacktrace: never
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 15
+
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_REQUEST_SIZE}
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Seoul
+        dialect: org.hibernate.dialect.MySQLDialect
+#  oauth2:
+#    kakao:
+#      client-id: ${KAKAO_REST_API_KEY}
+#      client-secret: ${KAKAO_CLIENT_ID}
+#      redirect-uri: ${KAKAO_REDIRECT_URI}
+#    naver:
+#      client-id: ${NAVER_CLIENT_ID}
+#      redirect-uri: ${NAVER_REDIRECT_URI}
+#      client-secret: ${NAVER_CLIENT_SECRET}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${VELKEY_PORT}
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+  threads:
+    virtual:
+      enabled: true
+  devtools:
+    restart:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root: INFO
+  file:
+    path: ./logs
+    name: app.log
+
+springdoc:
+  packages-to-scan: com.contech.tugoserver
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  cache:
+    disabled: true
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger
+    tags-sorter: alpha
+    operations-sorter: alpha
