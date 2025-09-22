@@ -26,7 +26,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         show_sql: true
@@ -36,15 +36,15 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
         dialect: org.hibernate.dialect.MySQLDialect
-#  oauth2:
-#    kakao:
-#      client-id: ${KAKAO_REST_API_KEY}
-#      client-secret: ${KAKAO_CLIENT_ID}
-#      redirect-uri: ${KAKAO_REDIRECT_URI}
-#    naver:
-#      client-id: ${NAVER_CLIENT_ID}
-#      redirect-uri: ${NAVER_REDIRECT_URI}
-#      client-secret: ${NAVER_CLIENT_SECRET}
+  oauth2:
+    github:
+      client:
+        id: ${GITHUB_CLIENT_ID}
+        secret: ${GITHUB_CLIENT_SECRET}
+        redirect-uri: ${GITHUB_REDIRECT_URI}
+      urls:
+        access-token: https://github.com/login/oauth/access_token
+        user: https://api.github.com/user
   data:
     redis:
       host: ${REDIS_HOST}
