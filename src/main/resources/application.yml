@@ -58,6 +58,17 @@ spring:
   devtools:
     restart:
       enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.debug: true
+
 
 management:
   endpoints:
@@ -73,7 +84,6 @@ logging:
     name: app.log
 
 springdoc:
-  packages-to-scan: com.contech.tugoserver
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   cache:
