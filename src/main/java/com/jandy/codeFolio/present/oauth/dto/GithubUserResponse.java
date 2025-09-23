@@ -1,4 +1,4 @@
-package com.jandy.codeFolio.present.user.dto;
+package com.jandy.codeFolio.present.oauth.dto;
 
 import lombok.Data;
 
