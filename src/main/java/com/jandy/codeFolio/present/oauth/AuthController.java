@@ -18,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/oauth/github")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements OauthControllerDocs{
 
     private final GithubService githubService;
 
