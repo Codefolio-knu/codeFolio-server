@@ -2,6 +2,8 @@ package com.jandy.codeFolio.present.oauth;
 
 import com.jandy.codeFolio.application.oauth.GithubService;
 import com.jandy.codeFolio.domain.user.User;
+import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
+import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
@@ -47,12 +49,12 @@ public class AuthController {
     ) {
         String sessionState = (String) session.getAttribute("oauth_state");
         if (sessionState == null || !sessionState.equals(state)) {
-            throw new RuntimeException("State mismatch. Possible CSRF attack.");
+            throw new CodeFolioRuntimeException(ErrorCode.SERVER_ERROR);
         }
 
         String verifiedEmail = (String) session.getAttribute("verified_email");
         if (verifiedEmail == null) {
-            throw new RuntimeException("이메일 인증을 먼저 진행해야 합니다.");
+            throw new CodeFolioRuntimeException(ErrorCode.USER_MAIL_NOTFOUND);
         }
 
         String accessToken = githubService.getAccessToken(code);
