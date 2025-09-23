@@ -3,18 +3,17 @@ package com.jandy.codeFolio.present.oauth;
 import com.jandy.codeFolio.application.oauth.GithubService;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
-import com.jandy.codeFolio.present.user.dto.GithubUserResponse;
+import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequestMapping("/oauth/github")
 @RequiredArgsConstructor
 public class AuthController {
@@ -41,7 +40,6 @@ public class AuthController {
     }
 
     @GetMapping("/callback")
-    @ResponseBody
     public ResponseEntity<ApiResponseWrapper<UserResponse>> githubCallback(
             @RequestParam String code,
             @RequestParam String state,
@@ -52,9 +50,15 @@ public class AuthController {
             throw new RuntimeException("State mismatch. Possible CSRF attack.");
         }
 
+        String verifiedEmail = (String) session.getAttribute("verified_email");
+        if (verifiedEmail == null) {
+            throw new RuntimeException("이메일 인증을 먼저 진행해야 합니다.");
+        }
+
         String accessToken = githubService.getAccessToken(code);
 
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
+        githubUser.setEmail(verifiedEmail);
 
         User user = githubService.registerOrLoginUser(githubUser, accessToken, "read:user,user:email");
         UserResponse userResponse = UserResponse.builder()
