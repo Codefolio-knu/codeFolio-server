@@ -27,7 +27,7 @@ public interface OauthControllerDocs {
     String redirectToGithubLogin(HttpSession session);
 
     @Hidden
-    ResponseEntity<ApiResponseWrapper<UserResponse>> githubCallback(
+    String githubCallback(
             String code,
             String state,
             HttpSession session

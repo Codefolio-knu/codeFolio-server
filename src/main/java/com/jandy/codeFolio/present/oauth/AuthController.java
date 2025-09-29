@@ -2,6 +2,7 @@ package com.jandy.codeFolio.present.oauth;
 
 import com.jandy.codeFolio.application.oauth.GithubService;
 import com.jandy.codeFolio.domain.user.User;
+import com.jandy.codeFolio.domain.user.UserRepository;
 import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
 import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
@@ -12,15 +13,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 import java.util.UUID;
 
-@RestController
+@Controller
 @RequestMapping("/oauth/github")
 @RequiredArgsConstructor
 public class AuthController implements OauthControllerDocs{
 
     private final GithubService githubService;
+    private final UserRepository userRepository;
 
     @Value("${spring.oauth2.github.client.id}")
     private String clientId;
@@ -42,7 +47,7 @@ public class AuthController implements OauthControllerDocs{
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<ApiResponseWrapper<UserResponse>> githubCallback(
+    public String githubCallback(
             @RequestParam String code,
             @RequestParam String state,
             HttpSession session
@@ -62,17 +67,15 @@ public class AuthController implements OauthControllerDocs{
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
         githubUser.setEmail(verifiedEmail);
 
-        User user = githubService.registerOrLoginUser(githubUser, accessToken, "read:user,user:email");
-        UserResponse userResponse = UserResponse.builder()
-                .id(user.getId())
-                .githubId(user.getGithubId())
-                .githubName(user.getGithubName())
-                .scope(user.getScope())
-                .email(user.getEmail())
-                .build();
-
-        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK ,userResponse));
+        Optional<User> existingUser = userRepository.findByGithubId(githubUser.getId());
+        if (existingUser.isPresent()) {
+            // 로그인 회원
+            session.setAttribute("loginUser", existingUser.get());
+            return "redirect:http://localhost:3000/home";
+        } else {
+            // 신규회원
+            session.setAttribute("tempGithubUser", githubUser);
+            return "redirect:http://localhost:3000/signup/additional-info";
+        }
     }
-
-
 }
