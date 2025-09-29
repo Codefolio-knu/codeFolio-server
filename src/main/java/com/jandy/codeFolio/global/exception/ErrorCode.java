@@ -16,6 +16,7 @@ public enum ErrorCode {
     USER_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 저장에 실패했습니다."),
     USER_MAIL_NOTFOUND(HttpStatus.INTERNAL_SERVER_ERROR, "먼저 메일 인증을 진행해주세요."),
     USER_CODE_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않는 인증번호입니다."),
+    SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
 
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
