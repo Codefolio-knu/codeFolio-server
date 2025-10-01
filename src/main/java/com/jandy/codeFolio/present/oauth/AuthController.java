@@ -75,7 +75,7 @@ public class AuthController implements OauthControllerDocs{
         } else {
             // 신규회원
             session.setAttribute("tempGithubUser", githubUser);
-            return "redirect:http://localhost:3000/signup/additional-info";
+            return "redirect:http://localhost:3000/signup";
         }
     }
 }
