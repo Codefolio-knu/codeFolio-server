@@ -3,6 +3,8 @@ package com.jandy.codeFolio.present.email;
 import com.jandy.codeFolio.application.email.EmailService;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
+import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
+import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.email.dto.EmailRequest;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/email")
 @RequiredArgsConstructor
-public class EmailController {
+public class EmailController implements EmailControllerDocs{
 
     private final EmailService emailService;
     private final UserRepository userRepository;
@@ -36,10 +38,7 @@ public class EmailController {
             session.setAttribute("verified_email", emailRequest.getEmail());
             return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "인증 완료"));
         } else {
-
+            throw new CodeFolioRuntimeException(ErrorCode.USER_MAIL_INVALID);
         }
-
-        return null;
     }
-
 }

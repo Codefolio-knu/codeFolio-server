@@ -1,5 +1,7 @@
 package com.jandy.codeFolio.application.email;
 
+import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
+import com.jandy.codeFolio.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,7 +19,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String email) {
         if (!email.endsWith("@knu.ac.kr")) {
-            throw new IllegalArgumentException("Only @knu.ac.kr emails are allowed.");
+            throw new CodeFolioRuntimeException(ErrorCode.USER_MAIL_INVALID);
         }
 
         String code = String.valueOf((int)(Math.random() * 900000) + 100000);

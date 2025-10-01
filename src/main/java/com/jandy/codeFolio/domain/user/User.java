@@ -42,6 +42,22 @@ public class User extends BaseTimeEntity {
 
     private String email;
 
+    @Column(unique = true)
+    private Integer studentId;
+
+    private String name;
+
+    @Column(length = 50)
+    private String major;
+
+    private Integer year;
+
+    @Column(length = 255)
+    private String bio;
+
+    @Column(nullable = false)
+    private Boolean isPublic;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Project> projects;
 

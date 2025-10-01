@@ -57,22 +57,4 @@ public class GithubService {
 
         return response.getBody();
     }
-
-    public User registerOrLoginUser(GithubUserResponse githubUser, String accessToken, String scope) {
-        return userRepository.findByGithubId(githubUser.getId())
-                .map(user -> {
-                    user.updateLoginInfo(accessToken, scope);
-                    return user;
-                })
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .githubId(githubUser.getId())
-                        .githubName(githubUser.getLogin())
-                        .email(githubUser.getEmail())
-                        .accessTokenEncrypted(accessToken)
-                        .role(Role.STUDENT)
-                        .scope(scope)
-                        .lastSyncedAt(LocalDateTime.now())
-                        .build()
-                ));
-    }
 }
