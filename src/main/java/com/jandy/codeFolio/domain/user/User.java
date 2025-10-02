@@ -75,4 +75,12 @@ public class User extends BaseTimeEntity {
         this.scope = scope;
         this.lastSyncedAt = LocalDateTime.now();
     }
+
+    public void updateUser(String major, String name, Integer year, String bio, Boolean isPublic) {
+        this.major = major;
+        this.name = name;
+        this.year = year;
+        this.bio = bio;
+        this.isPublic = isPublic;
+    }
 }
