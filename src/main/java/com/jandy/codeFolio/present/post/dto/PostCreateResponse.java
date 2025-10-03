@@ -15,6 +15,7 @@ public class PostCreateResponse {
     private Long userId;
     private String title;
     private String content;
+    private int capacity;
     private Role role;
     private LocalDate endDate;
     private List<String> skills;
@@ -25,6 +26,7 @@ public class PostCreateResponse {
         response.setUserId(post.getUser().getId());
         response.setTitle(post.getTitle());
         response.setContent(post.getContent());
+        response.setCapacity(post.getCapacity());
         response.setEndDate(post.getEndDate());
         response.setRole(post.getRole());
 
