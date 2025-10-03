@@ -10,6 +10,7 @@ public class PostCreateRequest {
     private Long userId;
     private String title;
     private String content;
+    private int capacity;
     private List<Long> skillIds;
     private LocalDate endDate;
 }

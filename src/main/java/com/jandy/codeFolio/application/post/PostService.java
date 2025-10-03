@@ -40,6 +40,7 @@ public class PostService {
                 .content(request.getContent())
                 .endDate(request.getEndDate())
                 .role(user.getRole())
+                .capacity(request.getCapacity())
                 .skills(selectedSkills)
                 .build();
 
