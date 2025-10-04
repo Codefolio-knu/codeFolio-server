@@ -3,14 +3,19 @@ package com.jandy.codeFolio.domain.post;
 import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.jandy.codeFolio.domain.post.QPost.post;
@@ -35,24 +40,15 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .selectFrom(post)
                 .leftJoin(post.skills, skill)
                 .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .groupBy(post.id);
 
-        if (condition.getSortType() != null) {
-            switch (condition.getSortType()) {
-                case DEADLINE_ASC:
-                    query.orderBy(post.endDate.asc());
-                    break;
-                case CREATED_DESC:
-                    query.orderBy(post.createdAt.desc());
-                    break;
-            }
-        } else {
-            query.orderBy(post.createdAt.desc());
-        }
+        addSortToQuery(query, pageable.getSort());
 
-        QueryResults<Post> results = query.fetchResults();
+
+        List<Post> content = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
         JPAQuery<Long> countQuery = queryFactory
                 .select(post.countDistinct())
@@ -60,7 +56,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(post.skills, skill)
                 .where(builder);
 
-        List<Post> content = results.getResults();
         Long total = countQuery.fetchOne();
 
         return new PageImpl<>(content, pageable, total != null ? total : 0);
@@ -78,5 +73,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         }
 
         return builder;
+    }
+
+    private void addSortToQuery(JPAQuery<?> query, Sort sort) {
+        if (!sort.isEmpty()) {
+            List<OrderSpecifier<?>> orders = new ArrayList<>();
+            PathBuilder postPath = new PathBuilder(post.getType(), post.getMetadata());
+
+            for (Sort.Order order : sort) {
+                Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+                orders.add(new OrderSpecifier(direction, postPath.get(order.getProperty())));
+            }
+            query.orderBy(orders.toArray(new OrderSpecifier[0]));
+        }
     }
 }

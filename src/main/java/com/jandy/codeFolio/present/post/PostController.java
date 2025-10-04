@@ -33,7 +33,6 @@ public class PostController implements PostControllerDocs{
     public ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findAllPosts(
             @RequestParam(required = false) List<Long> skillIds,
             @RequestParam(required = false) Integer capacity,
-            @RequestParam(required = false) PostSearchCondition.SortType sortType,
             @PageableDefault(
                     size = 10,
                     sort = "createdAt",
@@ -43,7 +42,6 @@ public class PostController implements PostControllerDocs{
         PostSearchCondition condition = new PostSearchCondition();
         condition.setSkillIds(skillIds);
         condition.setCapacity(capacity);
-        condition.setSortType(sortType);
 
         Page<PostListResponse> posts = postService.findAllPosts(condition, pageable);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
