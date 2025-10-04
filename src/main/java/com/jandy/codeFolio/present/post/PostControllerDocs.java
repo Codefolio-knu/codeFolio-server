@@ -4,7 +4,6 @@ import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
 import com.jandy.codeFolio.present.post.dto.PostListResponse;
-import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -48,7 +47,20 @@ public interface PostControllerDocs {
 
     @Operation(
             summary = "게시글 목록 조회 및 검색/정렬",
-            description = "페이지네이션을 사용하여 게시글 목록을 조회합니다. 검색 조건(기술 스택, 모집 인원) 및 정렬이 가능합니다. 정렬은 '최신순' 또는 '마감순'만 지원하며, Pageable의 sort 파라미터는 무시됩니다."
+            description = """
+                    페이지네이션을 사용하여 게시글 목록을 조회합니다. 
+                    검색 조건(기술 스택, 모집 인원)과 정렬이 가능합니다.
+                    
+                    ✅ 정렬은 Pageable의 sort 파라미터를 사용합니다.
+                    - 예시: `?sort=createdAt,desc` (최신순)
+                    - 예시: `?sort=endDate,asc` (마감 임박순)
+                    
+                    ✅ 페이징 예시:
+                    - `?page=0&size=10` (첫 페이지, 10개)
+                    
+                    ✅ 검색 예시:
+                    - `?skillIds=1,2&capacity=3`
+                    """
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -63,25 +75,30 @@ public interface PostControllerDocs {
             )
     })
     ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findAllPosts(
-            @Parameter(name = "skillIds",
+            @Parameter(
+                    name = "skillIds",
                     description = "검색할 기술 스택 ID 목록 (쉼표 구분: 예: 1,5,9). 요청된 모든 스택을 포함하는 게시글을 조회합니다.",
                     in = ParameterIn.QUERY,
-                    array = @ArraySchema(schema = @Schema(type = "integer", format = "int64")))
+                    array = @ArraySchema(schema = @Schema(type = "integer", format = "int64"))
+            )
             List<Long> skillIds,
 
-            @Parameter(name = "capacity",
+            @Parameter(
+                    name = "capacity",
                     description = "검색할 모집 인원 수 (예: 3)",
                     in = ParameterIn.QUERY,
-                    schema = @Schema(type = "integer"))
+                    schema = @Schema(type = "integer")
+            )
             Integer capacity,
 
-            @Parameter(name = "sortType",
-                    description = "정렬 기준: **CREATED_AT_DESC** (최신순, 기본값) 또는 **END_DATE_ASC** (마감순)",
-                    in = ParameterIn.QUERY,
-                    schema = @Schema(implementation = PostSearchCondition.SortType.class))
-            PostSearchCondition.SortType sortType,
-
-            @Parameter
+            @Parameter(
+                    description = """
+                            페이지네이션 및 정렬 정보입니다.
+                            - page: 조회할 페이지 번호 (0부터 시작)
+                            - size: 한 페이지당 데이터 수
+                            - sort: 정렬 기준 (예: `createdAt,desc` 또는 `endDate,asc`)
+                            """
+            )
             Pageable pageable
     );
 }
