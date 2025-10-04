@@ -1,7 +1,7 @@
 package com.jandy.codeFolio.application.post;
 
 import com.jandy.codeFolio.domain.post.Post;
-import com.jandy.codeFolio.domain.post.PostRespository;
+import com.jandy.codeFolio.domain.post.PostRepository;
 import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.domain.skill.SkillRepository;
 import com.jandy.codeFolio.domain.user.User;
@@ -10,8 +10,13 @@ import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
 import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
+import com.jandy.codeFolio.present.post.dto.PostListResponse;
+import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,10 +24,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostRespository postRespository;
+    private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
 
+    @Transactional
     public PostCreateResponse createPost(PostCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId())
@@ -44,8 +50,14 @@ public class PostService {
                 .skills(selectedSkills)
                 .build();
 
-        Post savedPost = postRespository.save(newPost);
+        Post savedPost = postRepository.save(newPost);
 
         return PostCreateResponse.from(savedPost);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostListResponse> findAllPosts(PostSearchCondition condition, Pageable pageable) {
+        Page<Post> postPage = postRepository.findPostsByConditions(condition, pageable);
+        return postPage.map(PostListResponse::from);
     }
 }

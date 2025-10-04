@@ -1,13 +1,21 @@
 package com.jandy.codeFolio.present.post;
 
 import com.jandy.codeFolio.application.post.PostService;
+import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
+import com.jandy.codeFolio.present.post.dto.PostListResponse;
+import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,8 +24,28 @@ public class PostController {
 
     private final PostService postService;
     
-    @PostMapping("/regist")
+    @PostMapping("/create")
     public PostCreateResponse createPost(@RequestBody PostCreateRequest request) {
         return postService.createPost(request);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findAllPosts(
+            @RequestParam(required = false) List<Long> skillIds,
+            @RequestParam(required = false) Integer capacity,
+            @RequestParam(required = false) PostSearchCondition.SortType sortType,
+            @PageableDefault(
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            ) Pageable pageable) {
+
+        PostSearchCondition condition = new PostSearchCondition();
+        condition.setSkillIds(skillIds);
+        condition.setCapacity(capacity);
+        condition.setSortType(sortType);
+
+        Page<PostListResponse> posts = postService.findAllPosts(condition, pageable);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
     }
 }
