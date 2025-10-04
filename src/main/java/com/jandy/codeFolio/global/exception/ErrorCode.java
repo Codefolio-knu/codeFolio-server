@@ -18,6 +18,9 @@ public enum ErrorCode {
     USER_CODE_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않는 인증번호입니다."),
     SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
 
+    // 기술스택 관련 에러
+    SKILL_NOT_FOUND(HttpStatus.NOT_FOUND, "기술 스택을 찾을 수 없습니다."),
+
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
     private final HttpStatus status;
