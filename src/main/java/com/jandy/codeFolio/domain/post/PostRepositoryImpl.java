@@ -35,6 +35,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .selectFrom(post)
                 .leftJoin(post.skills, skill)
                 .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(post.id);
 
         if (condition.getSortType() != null) {
