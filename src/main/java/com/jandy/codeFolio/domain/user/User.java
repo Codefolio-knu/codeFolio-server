@@ -58,6 +58,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
+    @Column(nullable = false)
+    private Boolean emailVerified;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Project> projects;
 
