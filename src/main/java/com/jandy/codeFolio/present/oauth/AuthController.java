@@ -57,20 +57,22 @@ public class AuthController implements OauthControllerDocs{
             throw new CodeFolioRuntimeException(ErrorCode.SERVER_ERROR);
         }
 
-        String verifiedEmail = (String) session.getAttribute("verified_email");
-        if (verifiedEmail == null) {
-            throw new CodeFolioRuntimeException(ErrorCode.USER_MAIL_NOTFOUND);
-        }
-
         String accessToken = githubService.getAccessToken(code);
-
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
-        githubUser.setEmail(verifiedEmail);
 
         Optional<User> existingUser = userRepository.findByGithubId(githubUser.getId());
         if (existingUser.isPresent()) {
-            // 로그인 회원
-            session.setAttribute("loginUser", existingUser.get());
+
+            User user = existingUser.get();
+
+            // 이메일 미인증
+            if (!user.getEmailVerified()) {
+                session.setAttribute("tempGithubUser", githubUser);
+                return "redirect:http://localhost:3000/email/verify";
+            }
+
+            // 인증회원 로그인
+            session.setAttribute("loginUser", user);
             return "redirect:http://localhost:3000/home";
         } else {
             // 신규회원

@@ -6,7 +6,9 @@ import com.jandy.codeFolio.domain.user.UserRepository;
 import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
 import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
+import com.jandy.codeFolio.global.util.Role;
 import com.jandy.codeFolio.present.email.dto.EmailRequest;
+import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +36,28 @@ public class EmailController implements EmailControllerDocs{
             @RequestBody EmailRequest emailRequest,
             HttpSession session
     ) {
-        if (emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode())) {
-            session.setAttribute("verified_email", emailRequest.getEmail());
-            return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "인증 완료"));
-        } else {
-            throw new CodeFolioRuntimeException(ErrorCode.USER_MAIL_INVALID);
-        }
+        GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser");
+        if (tempUser == null) throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED);
+
+        boolean verified = emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode());
+        if (!verified) throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
+
+        User newUser = User.builder()
+                .githubId(tempUser.getId())
+                .githubName(tempUser.getLogin())
+                .email(emailRequest.getEmail())
+                .emailVerified(true)
+                .name(tempUser.getName())
+                .role(Role.STUDENT)
+                .isPublic(true)
+                .emailVerified(true)
+                .build();
+
+        userRepository.save(newUser);
+
+        session.removeAttribute("tempGithubUser");
+        session.setAttribute("loginUser", newUser);
+
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "회원가입 완료"));
     }
 }
