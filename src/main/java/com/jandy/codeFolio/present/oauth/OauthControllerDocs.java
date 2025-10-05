@@ -29,7 +29,6 @@ public interface OauthControllerDocs {
     @Hidden
     String githubCallback(
             String code,
-            String state,
             HttpSession session
     );
 }

@@ -29,7 +29,7 @@ public interface EmailControllerDocs {
             @ApiResponse(responseCode = "200", description = "인증 코드 확인 성공"),
             @ApiResponse(responseCode = "400", description = "인증 코드 불일치 또는 잘못된 요청 데이터")
     })
-    ResponseEntity<ApiResponseWrapper<Void>> verifyCode(
+    String verifyCode(
             @Parameter(description = "이메일 및 인증 코드") @RequestBody EmailRequest emailRequest,
             @Parameter(hidden = true) HttpSession session
     );

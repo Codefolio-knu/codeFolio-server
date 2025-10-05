@@ -32,7 +32,7 @@ public class EmailController implements EmailControllerDocs{
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponseWrapper<Void>> verifyCode(
+    public String verifyCode(
             @RequestBody EmailRequest emailRequest,
             HttpSession session
     ) {
@@ -58,6 +58,6 @@ public class EmailController implements EmailControllerDocs{
         session.removeAttribute("tempGithubUser");
         session.setAttribute("loginUser", newUser);
 
-        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "회원가입 완료"));
+        return "redirect:http://localhost:3000/email/signup";
     }
 }

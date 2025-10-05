@@ -34,14 +34,13 @@ public class AuthController implements OauthControllerDocs{
 
     @GetMapping("/login")
     public String redirectToGithubLogin(HttpSession session) {
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauth_state", state);
+//        String state = UUID.randomUUID().toString();
+//        session.setAttribute("oauth_state", state);
 
         String githubAuthUrl = "https://github.com/login/oauth/authorize"
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
-                + "&scope=read:user,user:email"
-                + "&state=" + state;
+                + "&scope=read:user,user:email";
 
         return "redirect:" + githubAuthUrl;
     }
@@ -49,13 +48,12 @@ public class AuthController implements OauthControllerDocs{
     @GetMapping("/callback")
     public String githubCallback(
             @RequestParam String code,
-            @RequestParam String state,
             HttpSession session
     ) {
-        String sessionState = (String) session.getAttribute("oauth_state");
-        if (sessionState == null || !sessionState.equals(state)) {
-            throw new CodeFolioRuntimeException(ErrorCode.SERVER_ERROR);
-        }
+//        String sessionState = (String) session.getAttribute("oauth_state");
+//        if (sessionState == null || !sessionState.equals(state)) {
+//            throw new CodeFolioRuntimeException(ErrorCode.SERVER_ERROR);
+//        }
 
         String accessToken = githubService.getAccessToken(code);
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
@@ -77,7 +75,7 @@ public class AuthController implements OauthControllerDocs{
         } else {
             // 신규회원
             session.setAttribute("tempGithubUser", githubUser);
-            return "redirect:http://localhost:3000/signup";
+            return "redirect:http://localhost:3000/email/verify";
         }
     }
 }
