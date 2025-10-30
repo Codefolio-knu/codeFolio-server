@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build:
@@ -5,14 +7,20 @@ services:
       dockerfile: Dockerfile
     container_name: codeFolio-server
     depends_on:
-      - codeFolio-database
+      - db
     ports:
-      - ${SPRING_PORT}:${SPRING_PORT}
-    restart: "always"
+      - "${SPRING_PORT}:${SPRING_PORT}"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:${DB_PORT}/${DB_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: prod
+    restart: always
     networks:
-      - codeFolio-bridge
+      - codeFolio-net
 
-  codeFolio-database:
+  db:
     image: mysql:8.4.4
     container_name: codeFolio-database
     environment:
@@ -22,18 +30,17 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     command:
       --port=${DB_PORT} --max_allowed_packet=32M
-    expose:
-      - ${DB_PORT}
     ports:
-      - ${DB_PORT}:${DB_PORT}
-    restart: "no"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
-      - codeFolio-database:/var/lib/mysql
+      - db-data:/var/lib/mysql
+    restart: always
     networks:
-      - codeFolio-bridge
+      - codeFolio-net
+
 volumes:
-  codeFolio-database:
+  db-data:
 
 networks:
-  codeFolio-bridge:
+  codeFolio-net:
     driver: bridge
