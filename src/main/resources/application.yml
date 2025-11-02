@@ -17,11 +17,6 @@ spring:
     hikari:
       maximum-pool-size: 15
       minimum-idle: 15
-
-  servlet:
-    multipart:
-      max-file-size: ${MAX_FILE_SIZE}
-      max-request-size: ${MAX_REQUEST_SIZE}
   jpa:
     open-in-view: false
     show-sql: true
@@ -45,10 +40,6 @@ spring:
       urls:
         access-token: https://github.com/login/oauth/access_token
         user: https://api.github.com/user
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${VELKEY_PORT}
   flyway:
     enabled: false
     baseline-on-migrate: false
@@ -68,13 +59,6 @@ spring:
       mail.smtp.starttls.enable: true
       mail.smtp.starttls.required: true
       mail.debug: true
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 
 logging:
   level:
