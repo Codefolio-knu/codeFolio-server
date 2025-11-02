@@ -21,6 +21,9 @@ public enum ErrorCode {
     // 기술스택 관련 에러
     SKILL_NOT_FOUND(HttpStatus.NOT_FOUND, "기술 스택을 찾을 수 없습니다."),
 
+    // 성과 관련 에러
+    ACHIEVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "성과를 찾을 수 없습니다."),
+
     // 게시물 관련 에러
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."),
 
