@@ -1,0 +1,52 @@
+package com.jandy.codeFolio.application.application;
+
+import com.jandy.codeFolio.domain.application.Application;
+import com.jandy.codeFolio.domain.application.ApplicationRepository;
+import com.jandy.codeFolio.domain.application.ApplicationStatus;
+import com.jandy.codeFolio.domain.post.Post;
+import com.jandy.codeFolio.domain.post.PostRepository;
+import com.jandy.codeFolio.domain.user.User;
+import com.jandy.codeFolio.domain.user.UserRepository;
+import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
+import com.jandy.codeFolio.global.exception.ErrorCode;
+import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
+import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class ApplicationService {
+
+    private final ApplicationRepository applicationRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+
+    @Transactional
+    public ApplicationCreateResponse createApplication(Long postId, ApplicationCreateRequest request) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        if (post.getUser().equals(user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.CANNOT_APPLY_TO_OWN_POST);
+        }
+
+        if (applicationRepository.existsByPostAndUser(post, user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_ALREADY_APPLIED);
+        }
+
+        long acceptedCount = applicationRepository.countByPostAndStatus(post, ApplicationStatus.ACCEPTED);
+        if (post.getCapacity() <= acceptedCount) {
+            throw new CodeFolioRuntimeException(ErrorCode.CAPACITY_FULL);
+        }
+
+        Application application = Application.toEntity(post, user, request.getContent());
+        Application savedApplication = applicationRepository.save(application);
+
+        return ApplicationCreateResponse.from(savedApplication);
+    }
+}
