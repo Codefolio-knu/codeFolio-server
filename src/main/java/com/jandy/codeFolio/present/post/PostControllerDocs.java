@@ -3,6 +3,7 @@ package com.jandy.codeFolio.present.post;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
+import com.jandy.codeFolio.present.post.dto.PostDetailResponse;
 import com.jandy.codeFolio.present.post.dto.PostListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -100,5 +102,26 @@ public interface PostControllerDocs {
                             """
             )
             Pageable pageable
+    );
+
+    @Operation(
+            summary = "게시글 상세 조회",
+            description = "게시글 ID를 사용하여 특정 게시글의 상세 정보를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글 상세 조회 성공",
+                    content = @Content(schema = @Schema(implementation = PostDetailResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "POST_NOT_FOUND (게시글 ID가 존재하지 않음)",
+                    content = @Content
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<PostDetailResponse>> findPostById(
+            @Parameter(name = "id", description = "조회할 게시글 ID", required = true)
+            @PathVariable Long id
     );
 }

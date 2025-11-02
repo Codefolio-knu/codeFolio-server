@@ -10,6 +10,7 @@ import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
 import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
+import com.jandy.codeFolio.present.post.dto.PostDetailResponse;
 import com.jandy.codeFolio.present.post.dto.PostListResponse;
 import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +60,12 @@ public class PostService {
     public Page<PostListResponse> findAllPosts(PostSearchCondition condition, Pageable pageable) {
         Page<Post> postPage = postRepository.findPostsByConditions(condition, pageable);
         return postPage.map(PostListResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public PostDetailResponse findPostById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND));
+        return PostDetailResponse.fromEntity(post);
     }
 }

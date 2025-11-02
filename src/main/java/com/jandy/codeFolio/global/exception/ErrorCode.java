@@ -21,6 +21,14 @@ public enum ErrorCode {
     // 기술스택 관련 에러
     SKILL_NOT_FOUND(HttpStatus.NOT_FOUND, "기술 스택을 찾을 수 없습니다."),
 
+    // 게시물 관련 에러
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."),
+
+    // 지원 관련 에러
+    USER_ALREADY_APPLIED(HttpStatus.CONFLICT, "이미 지원한 게시물입니다."),
+    CANNOT_APPLY_TO_OWN_POST(HttpStatus.BAD_REQUEST, "자신의 게시물에는 지원할 수 없습니다."),
+    CAPACITY_FULL(HttpStatus.BAD_REQUEST, "모집 인원이 마감되었습니다."),
+
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
     private final HttpStatus status;
