@@ -4,6 +4,7 @@ import com.jandy.codeFolio.application.post.PostService;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.post.dto.PostCreateRequest;
 import com.jandy.codeFolio.present.post.dto.PostCreateResponse;
+import com.jandy.codeFolio.present.post.dto.PostDetailResponse;
 import com.jandy.codeFolio.present.post.dto.PostListResponse;
 import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,11 @@ public class PostController implements PostControllerDocs{
 
         Page<PostListResponse> posts = postService.findAllPosts(condition, pageable);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponseWrapper<PostDetailResponse>> findPostById(@PathVariable Long id) {
+        PostDetailResponse post = postService.findPostById(id);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, post));
     }
 }
