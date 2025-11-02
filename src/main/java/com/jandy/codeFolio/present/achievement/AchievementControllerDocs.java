@@ -4,6 +4,10 @@ import com.jandy.codeFolio.present.achievement.dto.AchievementCreateRequest;
 import com.jandy.codeFolio.present.achievement.dto.AchievementCreateResponse;
 import com.jandy.codeFolio.present.achievement.dto.AchievementUpdateRequest;
 import com.jandy.codeFolio.present.achievement.dto.AchievementUpdateResponse;
+import com.jandy.codeFolio.present.achievement.dto.AchievementListResponse;
+import com.jandy.codeFolio.present.achievement.dto.AchievementDetailResponse;
+
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Achievement API", description = "개인 성과 API 명세")
 public interface AchievementControllerDocs {
@@ -88,4 +94,36 @@ public interface AchievementControllerDocs {
             )
     })
     AchievementUpdateResponse updateAchievement(@PathVariable Long id, @Valid @RequestBody AchievementUpdateRequest request);
+
+    @Operation(
+            summary = "개인 성과 목록 조회",
+            description = "사용자의 모든 개인 성과 목록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성과 목록 조회 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            )
+    })
+    List<AchievementListResponse> findAllAchievements(@RequestParam Long userId);
+
+    @Operation(
+            summary = "개인 성과 상세 조회",
+            description = "개인 성과의 상세 정보를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성과 상세 조회 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ACHIEVEMENT_NOT_FOUND (성과 ID가 존재하지 않음)"
+            )
+    })
+    AchievementDetailResponse findAchievementById(@PathVariable Long id);
 }
