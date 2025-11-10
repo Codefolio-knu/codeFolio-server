@@ -88,4 +88,12 @@ public class AchievementService {
 
         return AchievementDetailResponse.from(achievement);
     }
+
+    @Transactional
+    public void deleteAchievement(Long id) {
+        if (!achievementRepository.existsById(id)) {
+            throw new CodeFolioRuntimeException(ErrorCode.ACHIEVEMENT_NOT_FOUND);
+        }
+        achievementRepository.deleteById(id);
+    }
 }
