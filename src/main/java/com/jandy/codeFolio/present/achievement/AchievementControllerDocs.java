@@ -126,4 +126,20 @@ public interface AchievementControllerDocs {
             )
     })
     AchievementDetailResponse findAchievementById(@PathVariable Long id);
+
+    @Operation(
+            summary = "개인 성과 삭제",
+            description = "개인 성과를 삭제합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "성과 삭제 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "ACHIEVEMENT_NOT_FOUND (성과 ID가 존재하지 않음)"
+            )
+    })
+    void deleteAchievement(@PathVariable Long id);
 }
