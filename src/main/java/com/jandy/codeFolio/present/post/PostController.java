@@ -26,8 +26,9 @@ public class PostController implements PostControllerDocs{
     private final PostService postService;
     
     @PostMapping("/create")
-    public PostCreateResponse createPost(@RequestBody PostCreateRequest request) {
-        return postService.createPost(request);
+    public ResponseEntity<ApiResponseWrapper<PostCreateResponse>> createPost(@RequestBody PostCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseWrapper.success(HttpStatus.CREATED, postService.createPost(request)));
     }
 
     @GetMapping

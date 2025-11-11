@@ -1,5 +1,6 @@
 package com.jandy.codeFolio.present.application;
 
+import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,7 +21,7 @@ public interface ApplicationControllerDocs {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "지원 성공"
             ),
             @ApiResponse(
@@ -35,7 +37,7 @@ public interface ApplicationControllerDocs {
                     description = "CANNOT_APPLY_TO_OWN_POST (자신의 게시물에는 지원할 수 없음) 또는 CAPACITY_FULL (모집 인원 마감)"
             )
     })
-    ApplicationCreateResponse createApplication(
+    ResponseEntity<ApiResponseWrapper<ApplicationCreateResponse>> createApplication(
             @Parameter(name = "postId", description = "지원할 게시글 ID", required = true)
             @PathVariable Long postId,
             @RequestBody ApplicationCreateRequest request

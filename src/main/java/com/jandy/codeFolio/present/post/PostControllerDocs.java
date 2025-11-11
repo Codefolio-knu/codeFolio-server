@@ -30,7 +30,7 @@ public interface PostControllerDocs {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "게시글 등록 성공",
                     content = @Content(schema = @Schema(implementation = PostCreateResponse.class))
             ),
@@ -45,7 +45,7 @@ public interface PostControllerDocs {
                     content = @Content
             )
     })
-    PostCreateResponse createPost(@RequestBody PostCreateRequest request);
+    ResponseEntity<ApiResponseWrapper<PostCreateResponse>> createPost(@RequestBody PostCreateRequest request);
 
     @Operation(
             summary = "게시글 목록 조회 및 검색/정렬",

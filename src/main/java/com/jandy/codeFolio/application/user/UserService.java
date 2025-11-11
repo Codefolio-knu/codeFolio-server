@@ -62,5 +62,12 @@ public class UserService {
 
         return UserResponse.fromEntity(findUser);
     }
+
+    @Transactional(readOnly = true)
+    public UserResponse getUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+        return UserResponse.fromEntity(user);
+    }
 }
 

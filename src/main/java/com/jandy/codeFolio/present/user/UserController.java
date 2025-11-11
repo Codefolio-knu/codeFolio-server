@@ -34,4 +34,10 @@ public class UserController implements UserControllerDocs{
         UserResponse modifyUser = userService.modifyUser(id, request);
         return  ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, modifyUser));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponseWrapper<UserResponse>> getUser(@PathVariable Long id) {
+        UserResponse userResponse = userService.getUser(id);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, userResponse));
+    }
 }
