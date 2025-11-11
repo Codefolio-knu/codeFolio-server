@@ -8,6 +8,9 @@ server:
   error:
     include-stacktrace: never
 
+front:
+  base-url: ${FRONT_BASEURL}
+
 spring:
   datasource:
     url: ${DB_URL}

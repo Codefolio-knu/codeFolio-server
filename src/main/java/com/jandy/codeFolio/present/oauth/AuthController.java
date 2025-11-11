@@ -31,6 +31,8 @@ public class AuthController implements OauthControllerDocs{
     private String clientId;
     @Value("${spring.oauth2.github.client.redirect-uri}")
     private String redirectUri;
+    @Value("${front.base-url}")
+    private String frontBaseUrl;
 
     @GetMapping("/login")
     public String redirectToGithubLogin(HttpSession session) {
@@ -66,16 +68,16 @@ public class AuthController implements OauthControllerDocs{
             // 이메일 미인증
             if (!user.getEmailVerified()) {
                 session.setAttribute("tempGithubUser", githubUser);
-                return "redirect:http://localhost:3000/email/verify";
+                return "redirect:" + frontBaseUrl + "/email/verify";
             }
 
             // 인증회원 로그인
             session.setAttribute("loginUser", user);
-            return "redirect:http://localhost:3000/home";
+            return "redirect:" + frontBaseUrl + "/home";
         } else {
             // 신규회원
             session.setAttribute("tempGithubUser", githubUser);
-            return "redirect:http://localhost:3000/email/verify";
+            return "redirect:" + frontBaseUrl + "/email/verify";
         }
     }
 }

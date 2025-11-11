@@ -12,9 +12,9 @@ import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +24,9 @@ public class EmailController implements EmailControllerDocs{
 
     private final EmailService emailService;
     private final UserRepository userRepository;
+
+    @Value("${front.base-url}")
+    private String frontBaseUrl;
 
     @PostMapping("/send")
     public ResponseEntity<ApiResponseWrapper<Void>> sendVerification(@RequestParam String email) {
@@ -58,6 +61,6 @@ public class EmailController implements EmailControllerDocs{
         session.removeAttribute("tempGithubUser");
         session.setAttribute("loginUser", newUser);
 
-        return "redirect:http://localhost:3000/email/signup";
+        return "redirect:" + frontBaseUrl + "/email/signup";
     }
 }
