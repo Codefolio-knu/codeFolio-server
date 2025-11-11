@@ -1,6 +1,8 @@
 package com.jandy.codeFolio.application.skill;
 
 import com.jandy.codeFolio.application.oauth.GithubService;
+import com.jandy.codeFolio.domain.project.Project;
+import com.jandy.codeFolio.domain.project.ProjectRepository;
 import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.domain.skill.SkillRepository;
 import com.jandy.codeFolio.domain.user.User;
@@ -26,6 +28,7 @@ public class SkillService {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
     private final GithubService githubService;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public void syncSkills(Long userId) {
@@ -38,6 +41,19 @@ public class SkillService {
 
         Set<String> languageNames = new HashSet<>();
         for (GithubRepoResponse repo : repos) {
+            if (repo.isFork()) {
+                continue;
+            }
+
+            Project project = projectRepository.findByUserAndTitle(user, repo.getName())
+                    .orElse(Project.builder()
+                            .user(user)
+                            .title(repo.getName())
+                            .build());
+
+            project.update(repo.getDescription(), repo.getHtmlUrl());
+            projectRepository.save(project);
+
             Map<String, Long> languages = githubService.getLanguages(repo.getLanguagesUrl(), accessToken);
             languageNames.addAll(languages.keySet());
         }
