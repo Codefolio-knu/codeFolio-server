@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GithubRepoResponse {
     private String name;
+    private String description;
+    @JsonProperty("html_url")
+    private String htmlUrl;
     @JsonProperty("languages_url")
     private String languagesUrl;
+    private boolean fork;
 }
