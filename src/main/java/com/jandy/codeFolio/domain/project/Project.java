@@ -3,11 +3,16 @@ package com.jandy.codeFolio.domain.project;
 import com.jandy.codeFolio.domain.base.BaseTimeEntity;
 import com.jandy.codeFolio.domain.user.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "projects")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Project extends BaseTimeEntity {
 
     @Id
@@ -25,5 +30,10 @@ public class Project extends BaseTimeEntity {
     private String description;
 
     private String repoUrl;
+
+    public void update(String description, String repoUrl) {
+        this.description = description;
+        this.repoUrl = repoUrl;
+    }
 }
 
