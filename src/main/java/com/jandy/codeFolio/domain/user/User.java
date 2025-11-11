@@ -5,6 +5,7 @@ import com.jandy.codeFolio.domain.application.Application;
 import com.jandy.codeFolio.domain.base.BaseTimeEntity;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.project.Project;
+import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.global.util.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -72,6 +73,14 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Application> applications;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_skills",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private List<Skill> skills;
 
     public void updateLoginInfo(String accessToken, String scope) {
         this.accessTokenEncrypted = accessToken;

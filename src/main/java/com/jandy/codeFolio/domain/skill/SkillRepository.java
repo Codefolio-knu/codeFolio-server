@@ -2,5 +2,11 @@ package com.jandy.codeFolio.domain.skill;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 public interface SkillRepository extends JpaRepository<Skill, Long> {
+    Optional<Skill> findByName(String name);
+    List<Skill> findByNameIn(Collection<String> names);
 }
