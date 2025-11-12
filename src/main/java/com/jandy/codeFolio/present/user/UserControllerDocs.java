@@ -6,6 +6,7 @@ import com.jandy.codeFolio.present.user.dto.UserResponse;
 import com.jandy.codeFolio.present.user.dto.UserSignupRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,7 +42,12 @@ public interface UserControllerDocs {
                     content = @Content
             )
     })
-    ResponseEntity<ApiResponseWrapper<UserResponse>> signupUser(@RequestBody UserSignupRequest userSignupRequest, HttpSession session);
+    ResponseEntity<ApiResponseWrapper<UserResponse>> signupUser(
+            @RequestBody UserSignupRequest userSignupRequest,
+            @Parameter(description = "GitHub 사용자 ID", required = true, in = ParameterIn.QUERY) Long githubId,
+            @Parameter(description = "GitHub 사용자 이름", required = true, in = ParameterIn.QUERY) String githubName,
+            @Parameter(description = "GitHub 사용자 이메일", required = true, in = ParameterIn.QUERY) String email
+    );
 
     @Operation(
             summary = "유저 정보 수정",

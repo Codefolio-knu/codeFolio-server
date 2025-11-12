@@ -24,8 +24,13 @@ public class UserController implements UserControllerDocs{
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponseWrapper<UserResponse>> signupUser(@RequestBody UserSignupRequest userSignupRequest, HttpSession session) {
-        UserResponse response = userService.signupUser(userSignupRequest, session);
+    public ResponseEntity<ApiResponseWrapper<UserResponse>> signupUser(
+            @RequestBody UserSignupRequest userSignupRequest,
+            @RequestParam Long githubId,
+            @RequestParam String githubName,
+            @RequestParam String email
+    ) {
+        UserResponse response = userService.signupUser(userSignupRequest, githubId, githubName, email);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, response));
     }
 

@@ -22,26 +22,28 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserResponse signupUser(UserSignupRequest userSignupRequest, HttpSession session) {
-        GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser");
+    public UserResponse signupUser(UserSignupRequest userSignupRequest, Long githubId, String githubName, String email) {
+        // GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser"); // Remove this line
 
-        if (tempUser == null) {
-            throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED);
-        }
+        // if (tempUser == null) { // Remove this line
+        //     throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED); // Remove this line
+        // } // Remove this line
 
         User newUser = User.builder()
-                .githubId(tempUser.getId())
-                .email(tempUser.getEmail())
+                .githubId(githubId)
+                .email(email)
+                .githubName(githubName)
                 .studentId(userSignupRequest.getStudentId())
                 .major(userSignupRequest.getMajor())
                 .name(userSignupRequest.getName())
                 .year(userSignupRequest.getYear())
                 .bio(userSignupRequest.getBio())
                 .isPublic(userSignupRequest.getIsPublic())
+                .emailVerified(true) // Assuming email is verified at this point
                 .build();
 
         userRepository.save(newUser);
-        session.removeAttribute("tempGithubUser");
+        // session.removeAttribute("tempGithubUser"); // Remove this line
 
         return UserResponse.fromEntity(newUser);
     }

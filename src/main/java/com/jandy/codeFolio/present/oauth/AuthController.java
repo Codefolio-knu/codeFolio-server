@@ -77,7 +77,7 @@ public class AuthController implements OauthControllerDocs{
         } else {
             // 신규회원
             // session.setAttribute("tempGithubUser", githubUser); // Remove this line
-            return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
+            return "redirect:" + frontBaseUrl + "/users/signup?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
         }
     }
 }
