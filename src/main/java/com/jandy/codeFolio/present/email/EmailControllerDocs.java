@@ -31,6 +31,8 @@ public interface EmailControllerDocs {
     })
     String verifyCode(
             @Parameter(description = "이메일 및 인증 코드") @RequestBody EmailRequest emailRequest,
+            @Parameter(description = "GitHub 사용자 ID", required = true) @RequestParam Long githubId,
+            @Parameter(description = "GitHub 사용자 이름", required = true) @RequestParam String githubName,
             @Parameter(hidden = true) HttpSession session
     );
 }

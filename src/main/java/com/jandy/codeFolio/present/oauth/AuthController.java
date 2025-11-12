@@ -67,8 +67,8 @@ public class AuthController implements OauthControllerDocs{
 
             // 이메일 미인증
             if (!user.getEmailVerified()) {
-                session.setAttribute("tempGithubUser", githubUser);
-                return "redirect:" + frontBaseUrl + "/email/verify";
+                // session.setAttribute("tempGithubUser", githubUser); // Remove this line
+                return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
             }
 
             // 인증회원 로그인
@@ -76,8 +76,8 @@ public class AuthController implements OauthControllerDocs{
             return "redirect:" + frontBaseUrl + "/home";
         } else {
             // 신규회원
-            session.setAttribute("tempGithubUser", githubUser);
-            return "redirect:" + frontBaseUrl + "/email/verify";
+            // session.setAttribute("tempGithubUser", githubUser); // Remove this line
+            return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
         }
     }
 }

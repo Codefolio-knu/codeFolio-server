@@ -37,20 +37,22 @@ public class EmailController implements EmailControllerDocs{
     @PostMapping("/verify")
     public String verifyCode(
             @RequestBody EmailRequest emailRequest,
+            @RequestParam Long githubId,
+            @RequestParam String githubName,
             HttpSession session
     ) {
-        GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser");
-        if (tempUser == null) throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED);
+        // GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser"); // Remove this line
+        // if (tempUser == null) throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED); // Remove this line
 
         boolean verified = emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode());
         if (!verified) throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
 
         User newUser = User.builder()
-                .githubId(tempUser.getId())
-                .githubName(tempUser.getLogin())
+                .githubId(githubId)
+                .githubName(githubName)
                 .email(emailRequest.getEmail())
                 .emailVerified(true)
-                .name(tempUser.getName())
+                .name(githubName) // Assuming githubName can be used as initial name
                 .role(Role.STUDENT)
                 .isPublic(true)
                 .emailVerified(true)
@@ -58,7 +60,7 @@ public class EmailController implements EmailControllerDocs{
 
         userRepository.save(newUser);
 
-        session.removeAttribute("tempGithubUser");
+        // session.removeAttribute("tempGithubUser"); // Remove this line
         session.setAttribute("loginUser", newUser);
 
         return "redirect:" + frontBaseUrl + "/email/signup";
