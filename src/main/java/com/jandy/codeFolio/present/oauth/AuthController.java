@@ -3,21 +3,16 @@ package com.jandy.codeFolio.present.oauth;
 import com.jandy.codeFolio.application.oauth.GithubService;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
-import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
-import com.jandy.codeFolio.global.exception.ErrorCode;
-import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
-import com.jandy.codeFolio.present.user.dto.UserResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/oauth/github")
@@ -73,11 +68,11 @@ public class AuthController implements OauthControllerDocs{
 
             // 인증회원 로그인
             session.setAttribute("loginUser", user);
-            return "redirect:" + frontBaseUrl + "/home";
+            return "redirect:" + frontBaseUrl;
         } else {
             // 신규회원
             // session.setAttribute("tempGithubUser", githubUser); // Remove this line
-            return "redirect:" + frontBaseUrl + "/users/signup?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
+            return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
         }
     }
 }

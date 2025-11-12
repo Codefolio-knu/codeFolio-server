@@ -1,15 +1,11 @@
 package com.jandy.codeFolio.present.email;
 
 import com.jandy.codeFolio.application.email.EmailService;
-import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
 import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
 import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
-import com.jandy.codeFolio.global.util.Role;
 import com.jandy.codeFolio.present.email.dto.EmailRequest;
-import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
-import com.jandy.codeFolio.present.user.dto.UserResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,22 +43,22 @@ public class EmailController implements EmailControllerDocs{
         boolean verified = emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode());
         if (!verified) throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
 
-        User newUser = User.builder()
-                .githubId(githubId)
-                .githubName(githubName)
-                .email(emailRequest.getEmail())
-                .emailVerified(true)
-                .name(githubName) // Assuming githubName can be used as initial name
-                .role(Role.STUDENT)
-                .isPublic(true)
-                .emailVerified(true)
-                .build();
+        // User newUser = User.builder() // Remove user creation from here
+        //         .githubId(githubId)
+        //         .githubName(githubName)
+        //         .email(emailRequest.getEmail())
+        //         .emailVerified(true)
+        //         .name(githubName)
+        //         .role(Role.STUDENT)
+        //         .isPublic(true)
+        //         .emailVerified(true)
+        //         .build();
 
-        userRepository.save(newUser);
+        // userRepository.save(newUser); // Remove user saving from here
 
         // session.removeAttribute("tempGithubUser"); // Remove this line
-        session.setAttribute("loginUser", newUser);
+        // session.setAttribute("loginUser", newUser); // Remove this line
 
-        return "redirect:" + frontBaseUrl + "/email/signup";
+        return "redirect:" + frontBaseUrl + "/signup?githubId=" + githubId + "&githubName=" + githubName + "&email=" + emailRequest.getEmail();
     }
 }
