@@ -32,12 +32,16 @@ public class Application extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    public static Application toEntity(Post post, User user, String content) {
-        return Application.builder()
-                .post(post)
-                .user(user)
-                .content(content)
-                .status(ApplicationStatus.PENDING)
-                .build();
+        public static Application toEntity(Post post, User user, String content) {
+            return Application.builder()
+                    .post(post)
+                    .user(user)
+                    .content(content)
+                    .status(ApplicationStatus.PENDING)
+                    .build();
+        }
+    
+        public void changeStatus(ApplicationStatus status) {
+            this.status = status;
+        }
     }
-}
