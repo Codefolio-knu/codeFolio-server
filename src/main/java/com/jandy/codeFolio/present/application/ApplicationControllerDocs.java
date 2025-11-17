@@ -3,6 +3,7 @@ package com.jandy.codeFolio.present.application;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
+import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Application API", description = "게시글 지원 관련 API 명세")
 public interface ApplicationControllerDocs {
@@ -38,8 +40,36 @@ public interface ApplicationControllerDocs {
             )
     })
     ResponseEntity<ApiResponseWrapper<ApplicationCreateResponse>> createApplication(
-            @Parameter(name = "postId", description = "지원할 게시글 ID", required = true)
-            @PathVariable Long postId,
             @RequestBody ApplicationCreateRequest request
+    );
+
+    @Operation(
+            summary = "지원 상태 변경 (수락/거절)",
+            description = "게시글 작성자가 지원자의 지원을 수락하거나 거절합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "상태 변경 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "APPLICATION_NOT_FOUND (지원서 ID가 존재하지 않음) 또는 USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "NO_AUTHORITY (권한 없음)"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "CAPACITY_FULL (모집 인원 마감, 수락 시에만 해당)"
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Void>> updateApplicationStatus(
+            @Parameter(name = "applicationId", description = "상태를 변경할 지원서 ID", required = true)
+            @PathVariable Long applicationId,
+            @RequestBody ApplicationStatusUpdateRequest request,
+            @Parameter(name = "userId", description = "게시글 작성자 ID", required = true)
+            @RequestParam Long userId
     );
 }
