@@ -4,12 +4,14 @@ import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
+import com.jandy.codeFolio.present.application.dto.ApplicationUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,4 +74,51 @@ public interface ApplicationControllerDocs {
             @Parameter(name = "userId", description = "게시글 작성자 ID", required = true)
             @RequestParam Long userId
     );
+
+    @Operation(
+            summary = "지원 내용 수정",
+            description = "지원자가 지원 내용을 수정합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "내용 수정 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "APPLICATION_NOT_FOUND (지원서 ID가 존재하지 않음) 또는 USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "NO_AUTHORITY (권한 없음)"
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Void>> updateApplicationContent(
+            @Parameter(name = "applicationId", description = "내용을 수정할 지원서 ID", required = true)
+            @PathVariable Long applicationId,
+            @RequestBody ApplicationUpdateRequest request);
+
+    @Operation(
+            summary = "지원 삭제",
+            description = "지원자가 지원을 삭제(취소)합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "지원 삭제 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "APPLICATION_NOT_FOUND (지원서 ID가 존재하지 않음) 또는 USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "NO_AUTHORITY (권한 없음)"
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Void>> deleteApplication(
+            @Parameter(name = "applicationId", description = "삭제할 지원서 ID", required = true)
+            @PathVariable Long applicationId,
+            @Parameter(name = "userId", description = "지원자 ID", required = true)
+            @RequestParam Long userId);
 }
