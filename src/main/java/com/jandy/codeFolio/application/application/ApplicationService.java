@@ -12,6 +12,7 @@ import com.jandy.codeFolio.global.exception.ErrorCode;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
+import com.jandy.codeFolio.present.application.dto.ApplicationUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,5 +74,35 @@ public class ApplicationService {
         }
 
         application.changeStatus(request.getStatus());
+    }
+
+    @Transactional
+    public void updateApplicationContent(Long applicationId, ApplicationUpdateRequest request) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        if (!application.getUser().equals(user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.NO_AUTHORITY);
+        }
+
+        application.updateContent(request.getContent());
+    }
+
+    @Transactional
+    public void deleteApplication(Long applicationId, Long userId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        if (!application.getUser().equals(user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.NO_AUTHORITY);
+        }
+
+        applicationRepository.delete(application);
     }
 }

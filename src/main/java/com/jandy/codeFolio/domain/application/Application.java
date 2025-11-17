@@ -44,4 +44,8 @@ public class Application extends BaseTimeEntity {
         public void changeStatus(ApplicationStatus status) {
             this.status = status;
         }
+
+        public void updateContent(String content) {
+            this.content = content;
+        }
     }
