@@ -1,12 +1,13 @@
 package com.jandy.codeFolio.present.application.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ApplicationCreateRequest {
-    private Long postId;
-    private Long userId;
+@AllArgsConstructor
+public class ApplicationUpdateRequest {
     private String content;
+    private Long userId;
 }

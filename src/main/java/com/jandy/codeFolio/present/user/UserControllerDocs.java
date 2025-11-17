@@ -4,6 +4,7 @@ import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.user.dto.UserModifyRequest;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import com.jandy.codeFolio.present.user.dto.UserSignupRequest;
+import com.jandy.codeFolio.present.user.dto.mypage.ApplicantListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "User API", description = "사용자 관련 API 명세")
 public interface UserControllerDocs {
@@ -84,4 +86,29 @@ public interface UserControllerDocs {
             )
     })
     ResponseEntity<ApiResponseWrapper<UserResponse>> getUser(@PathVariable Long id);
+
+    @Operation(
+            summary = "특정 게시물에 대한 지원자 목록 조회",
+            description = "게시물 작성자가 자신의 게시물에 지원한 지원자 목록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "지원자 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = ApplicantListResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "FORBIDDEN (게시물 작성자가 아님)",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "POST_NOT_FOUND (게시물 ID가 존재하지 않음)",
+                    content = @Content
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<ApplicantListResponse>> getApplicantsForPost(
+            @Parameter(description = "게시물 ID", required = true, in = ParameterIn.PATH) @PathVariable Long postId,
+            @Parameter(description = "사용자(게시물 작성자) ID", required = true, in = ParameterIn.QUERY) @RequestParam Long userId);
 }
