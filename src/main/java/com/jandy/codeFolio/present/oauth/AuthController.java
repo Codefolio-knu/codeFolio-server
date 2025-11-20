@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -68,7 +69,10 @@ public class AuthController implements OauthControllerDocs{
 
             // 인증회원 로그인
             session.setAttribute("loginUser", user);
-            return "redirect:" + frontBaseUrl;
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontBaseUrl)
+                    .queryParam("userId", user.getId())
+                    .toUriString();
+            return "redirect:" + redirectUrl;
         } else {
             // 신규회원
             // session.setAttribute("tempGithubUser", githubUser); // Remove this line
