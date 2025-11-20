@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "github oauth API", description = "github 로그인 API 명세")
 public interface OauthControllerDocs {
 
-    @Operation(summary = "Github 로그인", description = "Github 로그인 페이지로 리다이렉트합니다.")
+    @Operation(summary = "Github 로그인", description = "Github 로그인 페이지로 리다이렉트합니다. 로그인 성공 시, 프론트엔드 URL로 리다이렉트되며, 쿼리 파라미터로 `userId`가 포함됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "리다이렉트 성공")
     })
