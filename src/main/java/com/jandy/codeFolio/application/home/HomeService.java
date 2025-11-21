@@ -47,6 +47,7 @@ public class HomeService {
 
         return new UserSummaryResponse(
                 user.getName(),
+                user.getId(),
                 user.getBio(),
                 user.getMajor(),
                 skills,
@@ -66,7 +67,7 @@ public class HomeService {
                 .collect(Collectors.toList());
 
         return Stream.concat(projectAchievements.stream(), contestAchievements.stream())
-                .map(a -> new AchievementSummaryResponse(a.getTitle(), a.getType()))
+                .map(a -> new AchievementSummaryResponse(a.getTitle(), a.getType(), a.getAward(), a.getLink()))
                 .collect(Collectors.toList());
     }
 }

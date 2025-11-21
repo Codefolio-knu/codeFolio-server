@@ -34,70 +34,25 @@ public class Achievement extends BaseTimeEntity {
     private String description;
 
     private LocalDate startDate;
-
     private LocalDate endDate;
-
     private String link;
-
     private String host;
-
     private String award;
+    private Boolean isAwarded;
 
-    
 
-            private Boolean isAwarded;
-
-    
-
-        
-
-    
-
-            public void update(AchievementType type, String title, String description, LocalDate startDate, LocalDate endDate, String link, String host, String award, Boolean isAwarded) {
-
-    
-
-                this.type = type;
-
-    
-
-                this.title = title;
-
-    
-
-                this.description = description;
-
-    
-
-                this.startDate = startDate;
-
-    
-
-                this.endDate = endDate;
-
-    
-
-                this.link = link;
-
-    
-
-                this.host = host;
-
-    
-
-                this.award = award;
-
-    
-
-                this.isAwarded = isAwarded;
-
-    
-
-            }
-
-    
-
-        }
+    public void update(AchievementType type, String title, String description, LocalDate startDate, LocalDate endDate, String link, String host, String award, Boolean isAwarded) {
+        this.type = type;
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.link = link;
+        this.host = host;
+        this.award = award;
+        this.isAwarded = isAwarded;
+    }
+}
 
     
 

@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserSummaryResponse {
     private String name;
+    private Long id;
     private String bio;
     private String major;
     private List<SkillSummaryResponse> skills;

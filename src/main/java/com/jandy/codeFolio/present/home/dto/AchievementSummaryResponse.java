@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class AchievementSummaryResponse {
     private String title;
     private AchievementType type;
+    private String award;
+    private String link;
 }
