@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class AchievementCreateRequest {
     // Common fields
     @NotNull
     private String title;
+    private String briefDescription;
     private String description;
 
     // Project fields
@@ -27,6 +29,7 @@ public class AchievementCreateRequest {
     private LocalDate endDate;
     private String link;
     private Boolean isAwarded;
+    private List<String> skills;
 
     // Contest fields
     private String host;

@@ -2,6 +2,9 @@ package com.jandy.codeFolio.application.achievement;
 
 import com.jandy.codeFolio.domain.achievement.Achievement;
 import com.jandy.codeFolio.domain.achievement.AchievementRepository;
+import com.jandy.codeFolio.domain.achievement.AchievementType;
+import com.jandy.codeFolio.domain.skill.Skill;
+import com.jandy.codeFolio.domain.skill.SkillRepository;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
 import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
@@ -16,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +30,7 @@ public class AchievementService {
 
     private final AchievementRepository achievementRepository;
     private final UserRepository userRepository;
+    private final SkillRepository skillRepository;
 
     @Transactional
     public AchievementCreateResponse createAchievement(AchievementCreateRequest request) {
@@ -35,6 +41,7 @@ public class AchievementService {
                 .user(user)
                 .type(request.getType())
                 .title(request.getTitle())
+                .briefDescription(request.getBriefDescription())
                 .description(request.getDescription())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
@@ -43,6 +50,11 @@ public class AchievementService {
                 .award(request.getAward())
                 .isAwarded(request.getIsAwarded())
                 .build();
+
+        if (request.getType() == AchievementType.PROJECT && request.getSkills() != null) {
+            Set<Skill> skills = getOrCreateSkills(request.getSkills());
+            achievement.setSkills(skills);
+        }
 
         Achievement savedAchievement = achievementRepository.save(achievement);
 
@@ -57,6 +69,7 @@ public class AchievementService {
         achievement.update(
                 request.getType(),
                 request.getTitle(),
+                request.getBriefDescription(),
                 request.getDescription(),
                 request.getStartDate(),
                 request.getEndDate(),
@@ -65,6 +78,13 @@ public class AchievementService {
                 request.getAward(),
                 request.getIsAwarded()
         );
+
+        if (request.getType() == AchievementType.PROJECT) {
+            Set<Skill> skills = getOrCreateSkills(request.getSkills());
+            achievement.setSkills(skills);
+        } else {
+            achievement.setSkills(new HashSet<>());
+        }
 
         return AchievementUpdateResponse.builder().id(achievement.getId()).build();
     }
@@ -95,5 +115,27 @@ public class AchievementService {
             throw new CodeFolioRuntimeException(ErrorCode.ACHIEVEMENT_NOT_FOUND);
         }
         achievementRepository.deleteById(id);
+    }
+
+    private Set<Skill> getOrCreateSkills(List<String> skillNames) {
+        if (skillNames == null || skillNames.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        List<Skill> existingSkills = skillRepository.findByNameIn(skillNames);
+        Set<String> existingSkillNames = existingSkills.stream()
+                .map(Skill::getName)
+                .collect(Collectors.toSet());
+
+        List<Skill> newSkills = skillNames.stream()
+                .filter(name -> !existingSkillNames.contains(name))
+                .map(name -> Skill.builder().name(name).build())
+                .collect(Collectors.toList());
+
+        skillRepository.saveAll(newSkills);
+
+        Set<Skill> skills = new HashSet<>(existingSkills);
+        skills.addAll(newSkills);
+        return skills;
     }
 }
