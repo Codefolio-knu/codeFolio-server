@@ -27,4 +27,8 @@ public class ApiResponseWrapper<T> {
         return new ApiResponseWrapper<>(status, message, null);
     }
 
+    public static <T> ApiResponseWrapper<T> error(HttpStatus status, String message) {
+        return new ApiResponseWrapper<>(status, message, null);
+    }
+
 }
