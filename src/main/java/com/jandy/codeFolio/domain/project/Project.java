@@ -1,11 +1,13 @@
 package com.jandy.codeFolio.domain.project;
 
 import com.jandy.codeFolio.domain.base.BaseTimeEntity;
+import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "projects")
@@ -30,6 +32,13 @@ public class Project extends BaseTimeEntity {
     private String description;
 
     private String repoUrl;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "project_skill",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @Builder.Default
+    private Set<Skill> skills = new HashSet<>();
 
     public void update(String description, String repoUrl) {
         this.description = description;

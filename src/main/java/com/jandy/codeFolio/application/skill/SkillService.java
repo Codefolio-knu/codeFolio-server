@@ -39,7 +39,8 @@ public class SkillService {
 
         List<GithubRepoResponse> repos = githubService.getRepositories(accessToken);
 
-        Set<String> languageNames = new HashSet<>();
+        Set<Skill> totalUserSkills = new HashSet<>();
+
         for (GithubRepoResponse repo : repos) {
             if (repo.isFork()) {
                 continue;
@@ -52,16 +53,21 @@ public class SkillService {
                             .build());
 
             project.update(repo.getDescription(), repo.getHtmlUrl());
-            projectRepository.save(project);
+            project.getSkills().clear();
 
             Map<String, Long> languages = githubService.getLanguages(repo.getLanguagesUrl(), accessToken);
-            languageNames.addAll(languages.keySet());
+
+            for (String langName : languages.keySet()) {
+                Skill skill = skillRepository.findByName(langName)
+                        .orElseGet(() -> skillRepository.save(Skill.builder().name(langName).build()));
+                project.getSkills().add(skill);
+                totalUserSkills.add(skill);
+            }
+            projectRepository.save(project);
         }
 
-        List<Skill> skills = skillRepository.findByNameIn(languageNames);
-
         user.getSkills().clear();
-        user.getSkills().addAll(skills);
+        user.getSkills().addAll(totalUserSkills);
         userRepository.save(user);
     }
 

@@ -1,12 +1,15 @@
 package com.jandy.codeFolio.present.project.dto;
 
 import com.jandy.codeFolio.domain.project.Project;
+import com.jandy.codeFolio.domain.skill.Skill;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -17,6 +20,7 @@ public class ProjectResponse {
     private String title;
     private String description;
     private String repoUrl;
+    private List<String> skills;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,6 +30,7 @@ public class ProjectResponse {
                 .title(project.getTitle())
                 .description(project.getDescription())
                 .repoUrl(project.getRepoUrl())
+                .skills(project.getSkills().stream().map(Skill::getName).collect(Collectors.toList()))
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();
