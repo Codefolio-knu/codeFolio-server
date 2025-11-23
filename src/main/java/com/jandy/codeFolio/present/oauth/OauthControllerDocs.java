@@ -15,12 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "github oauth API", description = "github 로그인 API 명세")
 public interface OauthControllerDocs {
 
-    @Operation(summary = "Github 로그인", description = "Github 로그인 페이지로 리다이렉트합니다. 로그인 성공 시, 프론트엔드 URL로 리다이렉트되며, 쿼리 파라미터로 `userId`가 포함됩니다.")
+    @Operation(summary = "Github 로그인", description = "Github 로그인 페이지로 리다이렉트합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "302", description = "리다이렉트 성공")
     })
@@ -31,4 +32,11 @@ public interface OauthControllerDocs {
             String code,
             HttpSession session
     );
+
+    @Operation(summary = "인증된 유저 정보 조회", description = "현재 로그인된 유저의 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+    })
+    ResponseEntity<ApiResponseWrapper<UserResponse>> getAuthenticatedUser(HttpSession session);
 }
