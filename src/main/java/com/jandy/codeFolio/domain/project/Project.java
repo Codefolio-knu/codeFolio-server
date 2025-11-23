@@ -6,6 +6,7 @@ import com.jandy.codeFolio.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +37,9 @@ public class Project extends BaseTimeEntity {
 
     private String repoUrl;
 
+    private LocalDate startDate;
+    private LocalDate endDate;
+
     private Boolean isAwarded;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -48,6 +52,15 @@ public class Project extends BaseTimeEntity {
     public void update(String description, String repoUrl) {
         this.description = description;
         this.repoUrl = repoUrl;
+    }
+
+    public void update(String title, String briefDescription, String description, LocalDate startDate, LocalDate endDate, Boolean isAwarded) {
+        this.title = title;
+        this.briefDescription = briefDescription;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isAwarded = isAwarded;
     }
 }
 
