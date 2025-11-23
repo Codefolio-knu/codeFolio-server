@@ -3,13 +3,11 @@ package com.jandy.codeFolio.present.project;
 import com.jandy.codeFolio.application.project.ProjectService;
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
 import com.jandy.codeFolio.present.project.dto.ProjectResponse;
+import com.jandy.codeFolio.present.project.dto.ProjectUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,15 @@ public class ProjectController implements ProjectControllerDocs {
     @GetMapping
     public ResponseEntity<ApiResponseWrapper<List<ProjectResponse>>> findAllProjects(@PathVariable Long userId) {
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, projectService.findAllByUserId(userId)));
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<ApiResponseWrapper<ProjectResponse>> getProjectById(@PathVariable Long userId, @PathVariable Long projectId) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, projectService.getProjectById(projectId)));
+    }
+
+    @PatchMapping("/{projectId}")
+    public ResponseEntity<ApiResponseWrapper<Long>> updateProject(@PathVariable Long userId, @PathVariable Long projectId, @RequestBody ProjectUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, projectService.updateProject(projectId, request)));
     }
 }

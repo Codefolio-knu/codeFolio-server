@@ -27,6 +27,9 @@ public enum ErrorCode {
     // 게시물 관련 에러
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."),
 
+    // 프로젝트 관련 에러
+    PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "프로젝트를 찾을 수 없습니다."),
+
     // 지원 관련 에러
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "지원서를 찾을 수 없습니다."),
     USER_ALREADY_APPLIED(HttpStatus.CONFLICT, "이미 지원한 게시물입니다."),

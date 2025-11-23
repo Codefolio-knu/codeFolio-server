@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,18 +20,28 @@ public class ProjectResponse {
     private Long id;
     private String title;
     private String briefDescription;
+    private String description;
     private String repoUrl;
-    private Boolean isAward;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Boolean isAwarded;
     private List<String> skills;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static ProjectResponse from(Project project) {
         return ProjectResponse.builder()
                 .id(project.getId())
                 .title(project.getTitle())
                 .briefDescription(project.getBriefDescription())
+                .description(project.getDescription())
                 .repoUrl(project.getRepoUrl())
-                .isAward(project.getIsAwarded())
+                .startDate(project.getStartDate())
+                .endDate(project.getEndDate())
+                .isAwarded(project.getIsAwarded())
                 .skills(project.getSkills().stream().map(Skill::getName).collect(Collectors.toList()))
+                .createdAt(project.getCreatedAt())
+                .updatedAt(project.getUpdatedAt())
                 .build();
     }
 }
