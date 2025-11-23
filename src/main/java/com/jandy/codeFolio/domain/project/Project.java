@@ -28,10 +28,15 @@ public class Project extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(length = 100)
+    private String briefDescription;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
     private String repoUrl;
+
+    private Boolean isAwarded;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "project_skill",
