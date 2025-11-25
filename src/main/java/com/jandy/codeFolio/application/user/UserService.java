@@ -30,11 +30,6 @@ public class UserService {
 
     @Transactional
     public UserResponse signupUser(UserSignupRequest userSignupRequest, Long githubId, String githubName, String email) {
-        // GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser"); // Remove this line
-
-        // if (tempUser == null) { // Remove this line
-        //     throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED); // Remove this line
-        // } // Remove this line
 
         User newUser = User.builder()
                 .githubId(githubId)
@@ -46,11 +41,10 @@ public class UserService {
                 .year(userSignupRequest.getYear())
                 .bio(userSignupRequest.getBio())
                 .isPublic(userSignupRequest.getIsPublic())
-                .emailVerified(true) // Assuming email is verified at this point
+                .emailVerified(true)
                 .build();
 
         userRepository.save(newUser);
-        // session.removeAttribute("tempGithubUser"); // Remove this line
 
         return UserResponse.fromEntity(newUser);
     }

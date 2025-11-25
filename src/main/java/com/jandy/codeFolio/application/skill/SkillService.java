@@ -36,7 +36,6 @@ public class SkillService {
                 .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
 
         String accessToken = user.getAccessTokenEncrypted();
-
         List<GithubRepoResponse> repos = githubService.getRepositories(accessToken);
 
         Set<Skill> totalUserSkills = new HashSet<>();

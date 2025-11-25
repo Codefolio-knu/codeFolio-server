@@ -1,6 +1,5 @@
 package com.jandy.codeFolio.present.user.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data

@@ -1,8 +1,6 @@
 package com.jandy.codeFolio.application.oauth;
 
-import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
-import com.jandy.codeFolio.global.util.Role;
 import com.jandy.codeFolio.present.oauth.dto.GithubRepoResponse;
 import com.jandy.codeFolio.present.oauth.dto.GithubTokenResponse;
 import com.jandy.codeFolio.present.oauth.dto.GithubUserResponse;
@@ -15,7 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

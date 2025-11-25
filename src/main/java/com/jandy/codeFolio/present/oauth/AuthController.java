@@ -36,8 +36,6 @@ public class AuthController implements OauthControllerDocs{
 
     @GetMapping("/login")
     public String redirectToGithubLogin(HttpSession session) {
-//        String state = UUID.randomUUID().toString();
-//        session.setAttribute("oauth_state", state);
 
         String githubAuthUrl = "https://github.com/login/oauth/authorize"
                 + "?client_id=" + clientId
@@ -52,10 +50,6 @@ public class AuthController implements OauthControllerDocs{
             @RequestParam String code,
             HttpSession session
     ) {
-//        String sessionState = (String) session.getAttribute("oauth_state");
-//        if (sessionState == null || !sessionState.equals(state)) {
-//            throw new CodeFolioRuntimeException(ErrorCode.SERVER_ERROR);
-//        }
 
         String accessToken = githubService.getAccessToken(code);
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
@@ -67,7 +61,6 @@ public class AuthController implements OauthControllerDocs{
 
             // 이메일 미인증
             if (!user.getEmailVerified()) {
-                // session.setAttribute("tempGithubUser", githubUser); // Remove this line
                 return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
             }
 
@@ -76,7 +69,6 @@ public class AuthController implements OauthControllerDocs{
             return "redirect:" + frontBaseUrl;
         } else {
             // 신규회원
-            // session.setAttribute("tempGithubUser", githubUser); // Remove this line
             return "redirect:" + frontBaseUrl + "/email/verify?githubId=" + githubUser.getId() + "&githubName=" + githubUser.getLogin() + "&email=" + githubUser.getEmail();
         }
     }

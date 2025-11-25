@@ -37,27 +37,9 @@ public class EmailController implements EmailControllerDocs{
             @RequestParam String githubName,
             HttpSession session
     ) {
-        // GithubUserResponse tempUser = (GithubUserResponse) session.getAttribute("tempGithubUser"); // Remove this line
-        // if (tempUser == null) throw new CodeFolioRuntimeException(ErrorCode.SESSION_EXPIRED); // Remove this line
 
         boolean verified = emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode());
         if (!verified) throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
-
-        // User newUser = User.builder() // Remove user creation from here
-        //         .githubId(githubId)
-        //         .githubName(githubName)
-        //         .email(emailRequest.getEmail())
-        //         .emailVerified(true)
-        //         .name(githubName)
-        //         .role(Role.STUDENT)
-        //         .isPublic(true)
-        //         .emailVerified(true)
-        //         .build();
-
-        // userRepository.save(newUser); // Remove user saving from here
-
-        // session.removeAttribute("tempGithubUser"); // Remove this line
-        // session.setAttribute("loginUser", newUser); // Remove this line
 
         return "redirect:" + frontBaseUrl + "/signup?githubId=" + githubId + "&githubName=" + githubName + "&email=" + emailRequest.getEmail();
     }
