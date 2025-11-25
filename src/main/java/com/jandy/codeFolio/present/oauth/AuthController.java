@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -73,14 +70,21 @@ public class AuthController implements OauthControllerDocs{
         }
     }
 
-    @GetMapping("/auth/me")
-    @ResponseBody
-    public ResponseEntity<ApiResponseWrapper<UserResponse>> getAuthenticatedUser(HttpSession session) {
-        User loginUser = (User) session.getAttribute("loginUser");
-        if (loginUser != null) {
-            UserResponse userResponse = UserResponse.fromEntity(loginUser);
-            return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "성공적으로 유저 정보를 가져왔습니다.", userResponse));
+        @GetMapping("/auth/me")
+        @ResponseBody
+        public ResponseEntity<ApiResponseWrapper<UserResponse>> getAuthenticatedUser(HttpSession session) {
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser != null) {
+                UserResponse userResponse = UserResponse.fromEntity(loginUser);
+                return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "성공적으로 유저 정보를 가져왔습니다.", userResponse));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseWrapper.error(HttpStatus.UNAUTHORIZED, "로그인된 유저가 없습니다."));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseWrapper.error(HttpStatus.UNAUTHORIZED, "로그인된 유저가 없습니다."));
+
+        @PostMapping("/logout")
+        @ResponseBody
+        public ResponseEntity<ApiResponseWrapper<String>> logout(HttpSession session) {
+            session.invalidate();
+            return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "로그아웃 되었습니다.", "로그아웃 성공"));
+        }
     }
-}

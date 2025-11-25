@@ -39,4 +39,11 @@ public interface OauthControllerDocs {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
     ResponseEntity<ApiResponseWrapper<UserResponse>> getAuthenticatedUser(HttpSession session);
+
+    @Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+
+    })
+    ResponseEntity<ApiResponseWrapper<String>> logout(HttpSession session);
 }
