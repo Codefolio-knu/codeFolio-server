@@ -29,7 +29,7 @@ public class UserService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public UserResponse signupUser(UserSignupRequest userSignupRequest, Long githubId, String githubName, String email) {
+    public UserResponse signupUser(UserSignupRequest userSignupRequest, Long githubId, String githubName, String email, String accessToken) {
 
         User newUser = User.builder()
                 .githubId(githubId)
@@ -44,6 +44,7 @@ public class UserService {
                 .emailVerified(true)
                 .build();
 
+        newUser.updateLoginInfo(accessToken, "");
         userRepository.save(newUser);
 
         return UserResponse.fromEntity(newUser);

@@ -11,7 +11,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -81,7 +83,8 @@ public class User extends BaseTimeEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
-    private List<Skill> skills;
+    @Builder.Default
+    private Set<Skill> skills = new HashSet<>();
 
     public void updateLoginInfo(String accessToken, String scope) {
         this.accessTokenEncrypted = accessToken;

@@ -48,7 +48,8 @@ public interface UserControllerDocs {
             @RequestBody UserSignupRequest userSignupRequest,
             @Parameter(description = "GitHub 사용자 ID", required = true, in = ParameterIn.QUERY) Long githubId,
             @Parameter(description = "GitHub 사용자 이름", required = true, in = ParameterIn.QUERY) String githubName,
-            @Parameter(description = "GitHub 사용자 이메일", required = true, in = ParameterIn.QUERY) String email
+            @Parameter(description = "GitHub 사용자 이메일", required = true, in = ParameterIn.QUERY) String email,
+            @Parameter(hidden = true) HttpSession session
     );
 
     @Operation(

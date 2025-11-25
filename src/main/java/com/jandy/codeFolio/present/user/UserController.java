@@ -6,6 +6,7 @@ import com.jandy.codeFolio.present.user.dto.UserModifyRequest;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import com.jandy.codeFolio.present.user.dto.UserSignupRequest;
 import com.jandy.codeFolio.present.user.dto.mypage.ApplicantListResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,11 @@ public class UserController implements UserControllerDocs{
             @RequestBody UserSignupRequest userSignupRequest,
             @RequestParam Long githubId,
             @RequestParam String githubName,
-            @RequestParam String email
+            @RequestParam String email,
+            HttpSession session
     ) {
-        UserResponse response = userService.signupUser(userSignupRequest, githubId, githubName, email);
+        String accessToken = (String) session.getAttribute("githubAccessToken");
+        UserResponse response = userService.signupUser(userSignupRequest, githubId, githubName, email, accessToken);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, response));
     }
 

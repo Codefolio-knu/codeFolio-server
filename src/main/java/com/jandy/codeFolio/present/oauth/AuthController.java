@@ -51,10 +51,14 @@ public class AuthController implements OauthControllerDocs{
         String accessToken = githubService.getAccessToken(code);
         GithubUserResponse githubUser = githubService.getGithubUser(accessToken);
 
+        session.setAttribute("githubAccessToken", accessToken);
+
         Optional<User> existingUser = userRepository.findByGithubId(githubUser.getId());
         if (existingUser.isPresent()) {
 
             User user = existingUser.get();
+            user.updateLoginInfo(accessToken, "");
+            userRepository.save(user);
 
             // 이메일 미인증
             if (!user.getEmailVerified()) {
