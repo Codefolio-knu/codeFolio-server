@@ -68,4 +68,16 @@ public class PostService {
                 .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND));
         return PostDetailResponse.fromEntity(post);
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostListResponse> findPostsByUserId(Long userId, Pageable pageable) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        Page<Post> posts = postRepository.findAllByUserId(userId, pageable);
+
+        return posts.map(PostListResponse::from);
+    }
 }

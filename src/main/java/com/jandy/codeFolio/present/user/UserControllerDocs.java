@@ -1,6 +1,7 @@
 package com.jandy.codeFolio.present.user;
 
 import com.jandy.codeFolio.global.util.ApiResponseWrapper;
+import com.jandy.codeFolio.present.post.dto.PostListResponse;
 import com.jandy.codeFolio.present.user.dto.UserModifyRequest;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
 import com.jandy.codeFolio.present.user.dto.UserSignupRequest;
@@ -14,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,6 +90,19 @@ public interface UserControllerDocs {
             )
     })
     ResponseEntity<ApiResponseWrapper<UserResponse>> getUser(@PathVariable Long id);
+
+    @Operation(
+            summary = "사용자가 작성한 게시물 목록 조회",
+            description = "특정 사용자가 작성한 게시물 목록을 페이지네이션하여 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시물 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = Page.class))
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findPostsByUserId(@PathVariable Long id, Pageable pageable);
 
     @Operation(
             summary = "특정 게시물에 대한 지원자 목록 조회",
