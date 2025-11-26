@@ -21,6 +21,8 @@ import java.util.List;
 import static com.jandy.codeFolio.domain.post.QPost.post;
 import static com.jandy.codeFolio.domain.skill.QSkill.skill;
 
+import static com.jandy.codeFolio.domain.user.QUser.user;
+
 @Repository
 public class PostRepositoryImpl implements PostRepositoryCustom {
 
@@ -37,10 +39,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         BooleanBuilder builder = createWhereCondition(condition);
 
         JPAQuery<Post> query = queryFactory
-                .selectFrom(post)
-                .leftJoin(post.skills, skill)
-                .where(builder)
-                .groupBy(post.id);
+                .select(post).distinct()
+                .from(post)
+                .leftJoin(post.user, user).fetchJoin()
+                .leftJoin(post.skills, skill).fetchJoin()
+                .where(builder);
 
         addSortToQuery(query, pageable.getSort());
 

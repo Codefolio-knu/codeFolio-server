@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class PostListResponse {
     private Long id;
     private Long userId;
+    private String authorName;
     private String title;
     private String content;
     private LocalDate endDate;
@@ -26,6 +27,7 @@ public class PostListResponse {
         PostListResponse response = new PostListResponse();
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
+        response.setAuthorName(post.getUser().getName());
         response.setTitle(post.getTitle());
         response.setContent(post.getContent());
         response.setEndDate(post.getEndDate());
