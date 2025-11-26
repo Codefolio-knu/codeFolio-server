@@ -124,4 +124,25 @@ public interface PostControllerDocs {
             @Parameter(name = "id", description = "조회할 게시글 ID", required = true)
             @PathVariable Long id
     );
+
+    @Operation(
+            summary = "게시글 삭제",
+            description = "게시글 ID를 사용하여 특정 게시글을 삭제합니다. (인증 로직은 추후 추가 예정)"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "게시글 삭제 성공",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "POST_NOT_FOUND (게시글 ID가 존재하지 않음)",
+                    content = @Content
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Void>> deletePost(
+            @Parameter(name = "id", description = "삭제할 게시글 ID", required = true)
+            @PathVariable Long id
+    );
 }

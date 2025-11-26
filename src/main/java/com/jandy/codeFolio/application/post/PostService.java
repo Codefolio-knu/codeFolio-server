@@ -80,4 +80,12 @@ public class PostService {
 
         return posts.map(PostListResponse::from);
     }
+
+    @Transactional
+    public void deletePost(Long id) {
+        if (!postRepository.existsById(id)) {
+            throw new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND);
+        }
+        postRepository.deleteById(id);
+    }
 }

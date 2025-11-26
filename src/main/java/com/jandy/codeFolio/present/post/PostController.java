@@ -54,4 +54,10 @@ public class PostController implements PostControllerDocs{
         PostDetailResponse post = postService.findPostById(id);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, post));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponseWrapper<Void>> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, null));
+    }
 }
