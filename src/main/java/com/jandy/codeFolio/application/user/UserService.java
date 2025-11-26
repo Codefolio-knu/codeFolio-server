@@ -13,11 +13,17 @@ import com.jandy.codeFolio.present.user.dto.UserResponse;
 import com.jandy.codeFolio.present.user.dto.UserSignupRequest;
 import com.jandy.codeFolio.present.user.dto.mypage.ApplicantInfoResponse;
 import com.jandy.codeFolio.present.user.dto.mypage.ApplicantListResponse;
+import com.jandy.codeFolio.present.post.dto.PostListResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,6 +99,32 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return new ApplicantListResponse(applicantInfoResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostListResponse> findAppliedPostsByUserId(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        Page<Long> postIdsPage = applicationRepository.findPostIdsByUserId(userId, pageable);
+        List<Long> postIds = postIdsPage.getContent();
+
+        if (postIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        List<Post> postsWithDetails = postRepository.findPostsWithSkillsByIds(postIds);
+
+        Map<Long, Post> postMap = postsWithDetails.stream()
+                .collect(Collectors.toMap(Post::getId, Function.identity()));
+
+        List<PostListResponse> responses = postIds.stream()
+                .map(postMap::get)
+                .map(PostListResponse::from)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, postIdsPage.getTotalElements());
     }
 }
 

@@ -128,4 +128,25 @@ public interface UserControllerDocs {
     ResponseEntity<ApiResponseWrapper<ApplicantListResponse>> getApplicantsForPost(
             @Parameter(description = "게시물 ID", required = true, in = ParameterIn.PATH) @PathVariable Long postId,
             @Parameter(description = "사용자(게시물 작성자) ID", required = true, in = ParameterIn.QUERY) @RequestParam Long userId);
+
+    @Operation(
+            summary = "사용자가 지원한 게시물 목록 조회",
+            description = "특정 사용자가 지원한 게시물 목록을 페이지네이션하여 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "지원한 게시물 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = Page.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "USER_NOT_FOUND (사용자 ID가 존재하지 않음)",
+                    content = @Content
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findAppliedPostsByUserId(
+            @Parameter(description = "사용자 ID", required = true) @PathVariable Long id,
+            Pageable pageable
+    );
 }

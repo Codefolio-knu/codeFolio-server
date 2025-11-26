@@ -62,4 +62,10 @@ public class UserController implements UserControllerDocs{
         ApplicantListResponse response = userService.getApplicantsForPost(postId, userId);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, response));
     }
+
+    @GetMapping("/{id}/applied-posts")
+    public ResponseEntity<ApiResponseWrapper<Page<PostListResponse>>> findAppliedPostsByUserId(@PathVariable Long id, Pageable pageable) {
+        Page<PostListResponse> posts = userService.findAppliedPostsByUserId(id, pageable);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
+    }
 }
