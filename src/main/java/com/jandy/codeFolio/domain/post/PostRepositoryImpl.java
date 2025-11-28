@@ -2,9 +2,9 @@ package com.jandy.codeFolio.domain.post;
 
 import com.jandy.codeFolio.present.post.dto.PostSearchCondition;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -15,12 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.jandy.codeFolio.domain.post.QPost.post;
 import static com.jandy.codeFolio.domain.skill.QSkill.skill;
-
 import static com.jandy.codeFolio.domain.user.QUser.user;
 
 @Repository
@@ -33,9 +33,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Page<Post> findPostsByConditions(PostSearchCondition condition, Pageable
-            pageable) {
-
+    public Page<Post> findPostsByConditions(PostSearchCondition condition, Pageable pageable) {
         BooleanBuilder builder = createWhereCondition(condition);
 
         JPAQuery<Post> query = queryFactory
@@ -45,8 +43,17 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .leftJoin(post.skills, skill).fetchJoin()
                 .where(builder);
 
-        addSortToQuery(query, pageable.getSort());
+        Sort sort = pageable.getSort();
+        Sort.Order endDateAscOrder = sort.getOrderFor("endDate");
 
+        if (endDateAscOrder != null && endDateAscOrder.isAscending()) {
+            OrderSpecifier<Integer> endDatePriority = new CaseBuilder()
+                    .when(post.endDate.goe(LocalDate.now())).then(1)
+                    .otherwise(2).asc();
+            query.orderBy(endDatePriority, post.endDate.asc());
+        } else {
+            addSortToQuery(query, sort);
+        }
 
         List<Post> content = query
                 .offset(pageable.getOffset())
@@ -85,7 +92,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
             for (Sort.Order order : sort) {
                 Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-                orders.add(new OrderSpecifier(direction, postPath.get(order.getProperty())));
+                orders.add(new OrderSpecifier<>(direction, postPath.get(order.getProperty())));
             }
             query.orderBy(orders.toArray(new OrderSpecifier[0]));
         }
