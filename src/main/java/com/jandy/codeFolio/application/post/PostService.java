@@ -1,5 +1,6 @@
 package com.jandy.codeFolio.application.post;
 
+import com.jandy.codeFolio.domain.application.ApplicationRepository;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.post.PostRepository;
 import com.jandy.codeFolio.domain.skill.Skill;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     public PostCreateResponse createPost(PostCreateRequest request) {
@@ -59,7 +63,21 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<PostListResponse> findAllPosts(PostSearchCondition condition, Pageable pageable) {
         Page<Post> postPage = postRepository.findPostsByConditions(condition, pageable);
-        return postPage.map(PostListResponse::from);
+
+        List<Long> postIds = postPage.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, Long> applicantCounts = applicationRepository.countApplicationsByPostIds(postIds).stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Long) result[1]
+                ));
+
+        return postPage.map(post -> {
+            int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
+            return PostListResponse.from(post, applicantCount);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +96,20 @@ public class PostService {
 
         Page<Post> posts = postRepository.findAllByUserId(userId, pageable);
 
-        return posts.map(PostListResponse::from);
+        List<Long> postIds = posts.getContent().stream()
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, Long> applicantCounts = applicationRepository.countApplicationsByPostIds(postIds).stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Long) result[1]
+                ));
+
+        return posts.map(post -> {
+            int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
+            return PostListResponse.from(post, applicantCount);
+        });
     }
 
     @Transactional

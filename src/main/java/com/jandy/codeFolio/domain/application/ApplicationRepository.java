@@ -17,4 +17,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     @Query("SELECT a.post.id FROM Application a WHERE a.user.id = :userId")
     Page<Long> findPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT a.post.id, COUNT(a.id) FROM Application a WHERE a.post.id IN :postIds AND a.status != 'REJECTED' GROUP BY a.post.id")
+    List<Object[]> countApplicationsByPostIds(@Param("postIds") List<Long> postIds);
 }

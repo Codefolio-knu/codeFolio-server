@@ -116,12 +116,21 @@ public class UserService {
 
         List<Post> postsWithDetails = postRepository.findPostsWithSkillsByIds(postIds);
 
+        Map<Long, Long> applicantCounts = applicationRepository.countApplicationsByPostIds(postIds).stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Long) result[1]
+                ));
+
         Map<Long, Post> postMap = postsWithDetails.stream()
                 .collect(Collectors.toMap(Post::getId, Function.identity()));
 
         List<PostListResponse> responses = postIds.stream()
                 .map(postMap::get)
-                .map(PostListResponse::from)
+                .map(post -> {
+                    int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
+                    return PostListResponse.from(post, applicantCount);
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, postIdsPage.getTotalElements());

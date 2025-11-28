@@ -20,10 +20,11 @@ public class PostListResponse {
     private LocalDate endDate;
     private Role role;
     private int capacity;
+    private int applicantCount;
     private LocalDateTime createdAt;
     private List<String> skills;
 
-    public static PostListResponse from(Post post) {
+    public static PostListResponse from(Post post, int applicantCount) {
         PostListResponse response = new PostListResponse();
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
@@ -34,6 +35,7 @@ public class PostListResponse {
         response.setRole(post.getRole());
         response.setCapacity(post.getCapacity());
         response.setCreatedAt(post.getCreatedAt());
+        response.setApplicantCount(applicantCount);
 
         if (post.getSkills() != null) {
             response.setSkills(
