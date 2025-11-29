@@ -4,6 +4,7 @@ import com.jandy.codeFolio.domain.achievement.Achievement;
 import com.jandy.codeFolio.domain.achievement.AchievementType;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
+import com.jandy.codeFolio.global.util.Role;
 import com.jandy.codeFolio.present.home.dto.AchievementSummaryResponse;
 import com.jandy.codeFolio.present.home.dto.HomeScreenResponse;
 import com.jandy.codeFolio.present.home.dto.SkillSummaryResponse;
@@ -28,7 +29,7 @@ public class HomeService {
 
     public HomeScreenResponse getHomeScreen(int page) {
         Pageable pageable = PageRequest.of(page, 6);
-        Page<User> users = userRepository.findAllByIsPublic(true, pageable);
+        Page<User> users = userRepository.findAllByIsPublicAndRole(true, Role.STUDENT, pageable);
 
         List<UserSummaryResponse> userSummaries = users.getContent().stream()
                 .map(this::mapToUserSummaryResponse)
