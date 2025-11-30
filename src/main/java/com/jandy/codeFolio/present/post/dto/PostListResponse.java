@@ -1,6 +1,7 @@
 package com.jandy.codeFolio.present.post.dto;
 
 import com.jandy.codeFolio.domain.post.Post;
+import com.jandy.codeFolio.domain.post.RecruitmentStatus;
 import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.global.util.Role;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class PostListResponse {
     private List<String> skills;
     private boolean isApplied;
     private Long applicationId;
+    private RecruitmentStatus status;
 
     public static PostListResponse from(Post post, int applicantCount, boolean isApplied, Long applicationId) {
         PostListResponse response = new PostListResponse();
@@ -40,6 +42,7 @@ public class PostListResponse {
         response.setApplicantCount(applicantCount);
         response.setApplied(isApplied);
         response.setApplicationId(applicationId);
+        response.setStatus(post.getStatus());
 
         if (post.getSkills() != null) {
             response.setSkills(
