@@ -34,8 +34,15 @@ public class ProfessorController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseWrapper<ProfessorLoginResponse>> login(@RequestBody ProfessorLoginRequest request) {
+    public ResponseEntity<ApiResponseWrapper<ProfessorLoginResponse>> login(@RequestBody ProfessorLoginRequest request, HttpSession session) {
         User professor = professorService.login(request);
+        session.setAttribute("professor", professor);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, ProfessorLoginResponse.from(professor)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseWrapper<Void>> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, null));
     }
 }
