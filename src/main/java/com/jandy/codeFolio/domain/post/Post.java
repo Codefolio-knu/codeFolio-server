@@ -43,6 +43,10 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role = Role.STUDENT;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RecruitmentStatus status = RecruitmentStatus.RECRUITING;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Application> applications;
 
@@ -63,5 +67,10 @@ public class Post extends BaseTimeEntity {
         this.capacity = capacity;
         this.role = role;
         this.skills = skills;
+        this.status = RecruitmentStatus.RECRUITING;
+    }
+
+    public void completeRecruitment() {
+        this.status = RecruitmentStatus.COMPLETED;
     }
 }

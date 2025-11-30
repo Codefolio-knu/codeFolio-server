@@ -123,6 +123,21 @@ public class PostService {
     }
 
     @Transactional
+    public void completeRecruitment(Long postId, Long userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        if (!post.getUser().equals(user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.NO_AUTHORITY);
+        }
+
+        post.completeRecruitment();
+    }
+
+    @Transactional
     public void deletePost(Long id) {
         if (!postRepository.existsById(id)) {
             throw new CodeFolioRuntimeException(ErrorCode.POST_NOT_FOUND);

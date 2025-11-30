@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -111,6 +112,31 @@ public interface PostControllerDocs {
                     schema = @Schema(type = "integer", format = "int64")
             )
             Long userId
+    );
+
+    @Operation(
+            summary = "게시글 모집 수동 완료",
+            description = "게시글 작성자가 정원이 차지 않아도 수동으로 모집을 완료 처리합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "모집 완료 처리 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "POST_NOT_FOUND (게시글 ID가 존재하지 않음) 또는 USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "NO_AUTHORITY (권한 없음)"
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<Void>> completeRecruitment(
+            @Parameter(name = "postId", description = "모집을 완료할 게시글 ID", required = true)
+            @PathVariable Long postId,
+            @Parameter(name = "userId", description = "게시글 작성자 ID", required = true)
+            @RequestParam Long userId
     );
 
     @Operation(

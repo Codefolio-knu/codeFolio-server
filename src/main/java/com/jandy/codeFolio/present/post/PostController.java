@@ -50,6 +50,12 @@ public class PostController implements PostControllerDocs {
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
     }
 
+    @PostMapping("/{postId}/complete")
+    public ResponseEntity<ApiResponseWrapper<Void>> completeRecruitment(@PathVariable Long postId, @RequestParam Long userId) {
+        postService.completeRecruitment(postId, userId);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, null));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponseWrapper<PostDetailResponse>> findPostById(@PathVariable Long id) {
         PostDetailResponse post = postService.findPostById(id);
