@@ -5,6 +5,7 @@ import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationUpdateRequest;
+import com.jandy.codeFolio.present.user.dto.mypage.ApplicantInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,6 +44,31 @@ public interface ApplicationControllerDocs {
     })
     ResponseEntity<ApiResponseWrapper<ApplicationCreateResponse>> createApplication(
             @RequestBody ApplicationCreateRequest request
+    );
+
+    @Operation(
+            summary = "지원서 상세 조회",
+            description = "지원자가 본인의 지원서 상세 내용을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "상세 내용 조회 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "APPLICATION_NOT_FOUND (지원서 ID가 존재하지 않음) 또는 USER_NOT_FOUND (사용자 ID가 존재하지 않음)"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "NO_AUTHORITY (권한 없음)"
+            )
+    })
+    ResponseEntity<ApiResponseWrapper<ApplicantInfoResponse>> getApplicationDetails(
+            @Parameter(name = "applicationId", description = "조회할 지원서 ID", required = true)
+            @PathVariable Long applicationId,
+            @Parameter(name = "userId", description = "지원자 본인 ID", required = true)
+            @RequestParam Long userId
     );
 
     @Operation(

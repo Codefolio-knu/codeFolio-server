@@ -14,6 +14,7 @@ import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationUpdateRequest;
+import com.jandy.codeFolio.present.user.dto.mypage.ApplicantInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +56,21 @@ public class ApplicationService {
         Application savedApplication = applicationRepository.save(application);
 
         return ApplicationCreateResponse.from(savedApplication);
+    }
+
+    @Transactional(readOnly = true)
+    public ApplicantInfoResponse getApplicationDetails(Long applicationId, Long userId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        if (!application.getUser().equals(user)) {
+            throw new CodeFolioRuntimeException(ErrorCode.NO_AUTHORITY);
+        }
+
+        return ApplicantInfoResponse.from(application);
     }
 
     @Transactional

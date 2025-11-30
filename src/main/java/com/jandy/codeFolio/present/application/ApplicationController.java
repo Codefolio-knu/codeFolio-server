@@ -6,6 +6,7 @@ import com.jandy.codeFolio.present.application.dto.ApplicationCreateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationCreateResponse;
 import com.jandy.codeFolio.present.application.dto.ApplicationStatusUpdateRequest;
 import com.jandy.codeFolio.present.application.dto.ApplicationUpdateRequest;
+import com.jandy.codeFolio.present.user.dto.mypage.ApplicantInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,14 @@ public class ApplicationController implements ApplicationControllerDocs {
             @RequestBody ApplicationCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseWrapper.success(HttpStatus.CREATED, applicationService.createApplication(request.getPostId(), request)));
+    }
+
+    @GetMapping("/{applicationId}")
+    public ResponseEntity<ApiResponseWrapper<ApplicantInfoResponse>> getApplicationDetails(
+            @PathVariable Long applicationId,
+            @RequestParam Long userId) {
+        ApplicantInfoResponse response = applicationService.getApplicationDetails(applicationId, userId);
+        return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, response));
     }
 
     @PostMapping("/{applicationId}/status")
