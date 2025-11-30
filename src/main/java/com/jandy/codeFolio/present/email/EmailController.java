@@ -38,7 +38,7 @@ public class EmailController implements EmailControllerDocs{
         if (!verified) {
             throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
         }
-        return "redirect:" + frontBaseUrl + "/professor/signup?email=" + emailRequest.getEmail();
+        return "redirect:" + frontBaseUrl + "/signup?role=PROFESSOR&email=" + emailRequest.getEmail();
     }
 
     @PostMapping("/verify")
