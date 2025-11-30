@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ApplicantInfoResponse {
     private Long applicationId;
+    private Long userId;
     private String name;
     private String major;
     private int grade;
@@ -23,6 +24,7 @@ public class ApplicantInfoResponse {
     public static ApplicantInfoResponse from(Application application) {
         return ApplicantInfoResponse.builder()
                 .applicationId(application.getId())
+                .userId(application.getUser().getId())
                 .name(application.getUser().getName())
                 .major(application.getUser().getMajor())
                 .grade(application.getUser().getYear())
