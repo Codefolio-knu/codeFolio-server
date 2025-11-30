@@ -107,8 +107,9 @@ public class UserService {
             throw new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND);
         }
 
-        Page<Long> postIdsPage = applicationRepository.findPostIdsByUserId(userId, pageable);
-        List<Long> postIds = postIdsPage.getContent();
+        Page<Object[]> appliedDetailsPage = applicationRepository.findAppliedPostDetailsByUserId(userId, pageable);
+        List<Long> postIds = appliedDetailsPage.getContent().stream().map(res -> (Long) res[0]).collect(Collectors.toList());
+        Map<Long, Long> applicationIdsMap = appliedDetailsPage.getContent().stream().collect(Collectors.toMap(res -> (Long) res[0], res -> (Long) res[1]));
 
         if (postIds.isEmpty()) {
             return Page.empty(pageable);
@@ -129,11 +130,12 @@ public class UserService {
                 .map(postMap::get)
                 .map(post -> {
                     int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
-                    return PostListResponse.from(post, applicantCount);
+                    Long applicationId = applicationIdsMap.get(post.getId());
+                    return PostListResponse.from(post, applicantCount, true, applicationId);
                 })
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, postIdsPage.getTotalElements());
+        return new PageImpl<>(responses, pageable, appliedDetailsPage.getTotalElements());
     }
 }
 

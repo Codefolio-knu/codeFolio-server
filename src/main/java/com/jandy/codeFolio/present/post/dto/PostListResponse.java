@@ -24,8 +24,9 @@ public class PostListResponse {
     private LocalDateTime createdAt;
     private List<String> skills;
     private boolean isApplied;
+    private Long applicationId;
 
-    public static PostListResponse from(Post post, int applicantCount) {
+    public static PostListResponse from(Post post, int applicantCount, boolean isApplied, Long applicationId) {
         PostListResponse response = new PostListResponse();
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
@@ -37,7 +38,8 @@ public class PostListResponse {
         response.setCapacity(post.getCapacity());
         response.setCreatedAt(post.getCreatedAt());
         response.setApplicantCount(applicantCount);
-        response.setApplied(false); // 기본값 설정
+        response.setApplied(isApplied);
+        response.setApplicationId(applicationId);
 
         if (post.getSkills() != null) {
             response.setSkills(
@@ -52,9 +54,11 @@ public class PostListResponse {
         return response;
     }
 
+    public static PostListResponse from(Post post, int applicantCount) {
+        return from(post, applicantCount, false, null);
+    }
+
     public static PostListResponse from(Post post, int applicantCount, boolean isApplied) {
-        PostListResponse response = from(post, applicantCount);
-        response.setApplied(isApplied);
-        return response;
+        return from(post, applicantCount, isApplied, null);
     }
 }

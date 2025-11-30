@@ -74,14 +74,19 @@ public class PostService {
                         result -> (Long) result[1]
                 ));
 
-        List<Long> appliedPostIds = (userId != null)
-                ? applicationRepository.findAllPostIdsByUserId(userId)
-                : List.of();
+        Map<Long, Long> applicationDetailsMap = (userId != null)
+                ? applicationRepository.findApplicationDetailsByUserId(userId).stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0], // postId
+                        result -> (Long) result[1]  // applicationId
+                ))
+                : Map.of();
 
         return postPage.map(post -> {
             int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
-            boolean isApplied = appliedPostIds.contains(post.getId());
-            return PostListResponse.from(post, applicantCount, isApplied);
+            boolean isApplied = applicationDetailsMap.containsKey(post.getId());
+            Long applicationId = applicationDetailsMap.get(post.getId());
+            return PostListResponse.from(post, applicantCount, isApplied, applicationId);
         });
     }
 
@@ -113,7 +118,7 @@ public class PostService {
 
         return posts.map(post -> {
             int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
-            return PostListResponse.from(post, applicantCount);
+            return PostListResponse.from(post, applicantCount, false, null);
         });
     }
 

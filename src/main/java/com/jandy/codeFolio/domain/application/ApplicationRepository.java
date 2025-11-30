@@ -15,11 +15,11 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     long countByPostAndStatus(Post post, ApplicationStatus status);
     List<Application> findAllByPost(Post post);
 
-    @Query("SELECT a.post.id FROM Application a WHERE a.user.id = :userId")
-    List<Long> findAllPostIdsByUserId(@Param("userId") Long userId);
+    @Query("SELECT a.post.id, a.id FROM Application a WHERE a.user.id = :userId")
+    List<Object[]> findApplicationDetailsByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT a.post.id FROM Application a WHERE a.user.id = :userId")
-    Page<Long> findPostIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query("SELECT a.post.id, a.id FROM Application a WHERE a.user.id = :userId")
+    Page<Object[]> findAppliedPostDetailsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT a.post.id, COUNT(a.id) FROM Application a WHERE a.post.id IN :postIds AND a.status != 'REJECTED' GROUP BY a.post.id")
     List<Object[]> countApplicationsByPostIds(@Param("postIds") List<Long> postIds);
