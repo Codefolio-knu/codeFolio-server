@@ -30,6 +30,17 @@ public class EmailController implements EmailControllerDocs{
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, "인증 메일이 발송되었습니다."));
     }
 
+    @PostMapping("/verify/professor")
+    public String verifyCodeForProfessor(
+            @RequestBody EmailRequest emailRequest
+    ) {
+        boolean verified = emailService.verifyCode(emailRequest.getEmail(), emailRequest.getCode());
+        if (!verified) {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_CODE_INVALID);
+        }
+        return "redirect:" + frontBaseUrl + "/signup?role=PROFESSOR&email=" + emailRequest.getEmail();
+    }
+
     @PostMapping("/verify")
     public String verifyCode(
             @RequestBody EmailRequest emailRequest,

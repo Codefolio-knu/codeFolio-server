@@ -26,11 +26,13 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String githubName;
 
-    @Column(nullable = false)
+    @Column
     private Long githubId;
+
+    private String password;
 
     @Column(columnDefinition = "TEXT")
     private String accessTokenEncrypted;
