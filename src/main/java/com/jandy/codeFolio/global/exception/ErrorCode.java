@@ -37,6 +37,7 @@ public enum ErrorCode {
     USER_ALREADY_APPLIED(HttpStatus.CONFLICT, "이미 지원한 게시물입니다."),
     CANNOT_APPLY_TO_OWN_POST(HttpStatus.BAD_REQUEST, "자신의 게시물에는 지원할 수 없습니다."),
     CAPACITY_FULL(HttpStatus.BAD_REQUEST, "모집 인원이 마감되었습니다."),
+    USER_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 유저만 지원 가능합니다."),
 
     // 권한 관련 에러
     NO_AUTHORITY(HttpStatus.FORBIDDEN, "권한이 없습니다."),

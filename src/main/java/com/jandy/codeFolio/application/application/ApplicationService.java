@@ -33,6 +33,10 @@ public class ApplicationService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_NOT_FOUND));
 
+        if (!user.getIsPublic()) {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_NOT_PUBLIC);
+        }
+
         if (post.getUser().equals(user)) {
             throw new CodeFolioRuntimeException(ErrorCode.CANNOT_APPLY_TO_OWN_POST);
         }
