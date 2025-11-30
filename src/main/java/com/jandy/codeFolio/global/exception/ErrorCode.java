@@ -17,7 +17,8 @@ public enum ErrorCode {
     USER_MAIL_NOTFOUND(HttpStatus.INTERNAL_SERVER_ERROR, "먼저 메일 인증을 진행해주세요."),
     USER_CODE_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않는 인증번호입니다."),
     SESSION_EXPIRED(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다."),
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다."),
+    LOGIN_ROLE_FAILED(HttpStatus.UNAUTHORIZED, "교수 역할이 아닙니다."),
+    LOGIN_PASSWORD_FAILED(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다."),
 
     // 기술스택 관련 에러
     SKILL_NOT_FOUND(HttpStatus.NOT_FOUND, "기술 스택을 찾을 수 없습니다."),

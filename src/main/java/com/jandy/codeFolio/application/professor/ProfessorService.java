@@ -37,14 +37,14 @@ public class ProfessorService {
     @Transactional(readOnly = true)
     public User login(ProfessorLoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.LOGIN_FAILED));
+                .orElseThrow(() -> new CodeFolioRuntimeException(ErrorCode.USER_ALREADY_EXISTS));
 
         if (user.getRole() != Role.PROFESSOR) {
-            throw new CodeFolioRuntimeException(ErrorCode.LOGIN_FAILED);
+            throw new CodeFolioRuntimeException(ErrorCode.LOGIN_ROLE_FAILED);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new CodeFolioRuntimeException(ErrorCode.LOGIN_FAILED);
+            throw new CodeFolioRuntimeException(ErrorCode.LOGIN_PASSWORD_FAILED);
         }
         return user;
     }
