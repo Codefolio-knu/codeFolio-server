@@ -1,5 +1,6 @@
 package com.jandy.codeFolio.present.post.dto;
 
+import com.jandy.codeFolio.domain.application.ApplicationStatus;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.post.RecruitmentStatus;
 import com.jandy.codeFolio.domain.skill.Skill;
@@ -27,8 +28,9 @@ public class PostListResponse {
     private boolean isApplied;
     private Long applicationId;
     private RecruitmentStatus status;
+    private ApplicationStatus applicationStatus;
 
-    public static PostListResponse from(Post post, int applicantCount, boolean isApplied, Long applicationId) {
+    public static PostListResponse from(Post post, int applicantCount, boolean isApplied, Long applicationId, ApplicationStatus applicationStatus) {
         PostListResponse response = new PostListResponse();
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
@@ -43,6 +45,7 @@ public class PostListResponse {
         response.setApplied(isApplied);
         response.setApplicationId(applicationId);
         response.setStatus(post.getStatus());
+        response.setApplicationStatus(applicationStatus);
 
         if (post.getSkills() != null) {
             response.setSkills(
@@ -58,10 +61,10 @@ public class PostListResponse {
     }
 
     public static PostListResponse from(Post post, int applicantCount) {
-        return from(post, applicantCount, false, null);
+        return from(post, applicantCount, false, null, null);
     }
 
-    public static PostListResponse from(Post post, int applicantCount, boolean isApplied) {
-        return from(post, applicantCount, isApplied, null);
+    public static PostListResponse from(Post post, int applicantCount, boolean isApplied, Long applicationId) {
+        return from(post, applicantCount, isApplied, applicationId, null);
     }
 }

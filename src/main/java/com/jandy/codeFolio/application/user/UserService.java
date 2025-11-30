@@ -2,6 +2,7 @@ package com.jandy.codeFolio.application.user;
 
 import com.jandy.codeFolio.domain.application.Application;
 import com.jandy.codeFolio.domain.application.ApplicationRepository;
+import com.jandy.codeFolio.domain.application.ApplicationStatus;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.post.PostRepository;
 import com.jandy.codeFolio.domain.user.User;
@@ -113,7 +114,17 @@ public class UserService {
 
         Page<Object[]> appliedDetailsPage = applicationRepository.findAppliedPostDetailsByUserId(userId, pageable);
         List<Long> postIds = appliedDetailsPage.getContent().stream().map(res -> (Long) res[0]).collect(Collectors.toList());
-        Map<Long, Long> applicationIdsMap = appliedDetailsPage.getContent().stream().collect(Collectors.toMap(res -> (Long) res[0], res -> (Long) res[1]));
+        
+        Map<Long, Long> applicationIdsMap = new java.util.HashMap<>();
+        Map<Long, ApplicationStatus> applicationStatusMap = new java.util.HashMap<>();
+        
+        appliedDetailsPage.getContent().forEach(result -> {
+            Long postId = (Long) result[0];
+            Long applicationId = (Long) result[1];
+            ApplicationStatus status = (ApplicationStatus) result[2];
+            applicationIdsMap.put(postId, applicationId);
+            applicationStatusMap.put(postId, status);
+        });
 
         if (postIds.isEmpty()) {
             return Page.empty(pageable);
@@ -135,7 +146,8 @@ public class UserService {
                 .map(post -> {
                     int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
                     Long applicationId = applicationIdsMap.get(post.getId());
-                    return PostListResponse.from(post, applicantCount, true, applicationId);
+                    ApplicationStatus applicationStatus = applicationStatusMap.get(post.getId());
+                    return PostListResponse.from(post, applicantCount, true, applicationId, applicationStatus);
                 })
                 .collect(Collectors.toList());
 

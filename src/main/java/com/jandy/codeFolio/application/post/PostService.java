@@ -1,6 +1,7 @@
 package com.jandy.codeFolio.application.post;
 
 import com.jandy.codeFolio.domain.application.ApplicationRepository;
+import com.jandy.codeFolio.domain.application.ApplicationStatus;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.post.PostRepository;
 import com.jandy.codeFolio.domain.skill.Skill;
@@ -32,6 +33,8 @@ public class PostService {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
     private final ApplicationRepository applicationRepository;
+
+    private record UserApplicationDetails(Long applicationId, ApplicationStatus status) {}
 
     @Transactional
     public PostCreateResponse createPost(PostCreateRequest request) {
@@ -74,19 +77,25 @@ public class PostService {
                         result -> (Long) result[1]
                 ));
 
-        Map<Long, Long> applicationDetailsMap = (userId != null)
-                ? applicationRepository.findApplicationDetailsByUserId(userId).stream()
-                .collect(Collectors.toMap(
-                        result -> (Long) result[0], // postId
-                        result -> (Long) result[1]  // applicationId
-                ))
-                : Map.of();
+        Map<Long, Long> applicationIdMap = new java.util.HashMap<>();
+        Map<Long, ApplicationStatus> applicationStatusMap = new java.util.HashMap<>();
+
+        if (userId != null) {
+            applicationRepository.findApplicationDetailsByUserId(userId).forEach(result -> {
+                Long postId = (Long) result[0];
+                Long applicationId = (Long) result[1];
+                ApplicationStatus status = (ApplicationStatus) result[2];
+                applicationIdMap.put(postId, applicationId);
+                applicationStatusMap.put(postId, status);
+            });
+        }
 
         return postPage.map(post -> {
             int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
-            boolean isApplied = applicationDetailsMap.containsKey(post.getId());
-            Long applicationId = applicationDetailsMap.get(post.getId());
-            return PostListResponse.from(post, applicantCount, isApplied, applicationId);
+            boolean isApplied = applicationIdMap.containsKey(post.getId());
+            Long applicationId = applicationIdMap.get(post.getId());
+            ApplicationStatus applicationStatus = applicationStatusMap.get(post.getId());
+            return PostListResponse.from(post, applicantCount, isApplied, applicationId, applicationStatus);
         });
     }
 
