@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -101,7 +102,15 @@ public interface PostControllerDocs {
                             - sort: 정렬 기준 (예: `createdAt,desc` 또는 `endDate,asc`)
                             """
             )
-            Pageable pageable
+            Pageable pageable,
+
+            @Parameter(
+                    name = "userId",
+                    description = "지원 상태를 확인할 사용자의 ID입니다. 제공될 경우, 해당 사용자에 대해 'isApplied' 플래그가 정확히 설정됩니다.",
+                    in = ParameterIn.QUERY,
+                    schema = @Schema(type = "integer", format = "int64")
+            )
+            Long userId
     );
 
     @Operation(

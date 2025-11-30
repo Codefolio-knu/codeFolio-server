@@ -61,7 +61,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostListResponse> findAllPosts(PostSearchCondition condition, Pageable pageable) {
+    public Page<PostListResponse> findAllPosts(PostSearchCondition condition, Pageable pageable, Long userId) {
         Page<Post> postPage = postRepository.findPostsByConditions(condition, pageable);
 
         List<Long> postIds = postPage.getContent().stream()
@@ -74,9 +74,14 @@ public class PostService {
                         result -> (Long) result[1]
                 ));
 
+        List<Long> appliedPostIds = (userId != null)
+                ? applicationRepository.findAllPostIdsByUserId(userId)
+                : List.of();
+
         return postPage.map(post -> {
             int applicantCount = applicantCounts.getOrDefault(post.getId(), 0L).intValue();
-            return PostListResponse.from(post, applicantCount);
+            boolean isApplied = appliedPostIds.contains(post.getId());
+            return PostListResponse.from(post, applicantCount, isApplied);
         });
     }
 

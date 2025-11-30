@@ -21,10 +21,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
-public class PostController implements PostControllerDocs{
+public class PostController implements PostControllerDocs {
 
     private final PostService postService;
-    
+
     @PostMapping("/create")
     public ResponseEntity<ApiResponseWrapper<PostCreateResponse>> createPost(@RequestBody PostCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -39,13 +39,14 @@ public class PostController implements PostControllerDocs{
                     size = 10,
                     sort = "createdAt",
                     direction = Sort.Direction.DESC
-            ) Pageable pageable) {
+            ) Pageable pageable,
+            @RequestParam(required = false) Long userId) {
 
         PostSearchCondition condition = new PostSearchCondition();
         condition.setSkillIds(skillIds);
         condition.setCapacity(capacity);
 
-        Page<PostListResponse> posts = postService.findAllPosts(condition, pageable);
+        Page<PostListResponse> posts = postService.findAllPosts(condition, pageable, userId);
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, posts));
     }
 
