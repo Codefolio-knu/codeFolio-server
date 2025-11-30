@@ -5,6 +5,7 @@ import com.jandy.codeFolio.domain.application.ApplicationRepository;
 import com.jandy.codeFolio.domain.application.ApplicationStatus;
 import com.jandy.codeFolio.domain.post.Post;
 import com.jandy.codeFolio.domain.post.PostRepository;
+import com.jandy.codeFolio.domain.post.RecruitmentStatus;
 import com.jandy.codeFolio.domain.user.User;
 import com.jandy.codeFolio.domain.user.UserRepository;
 import com.jandy.codeFolio.global.exception.CodeFolioRuntimeException;
@@ -46,8 +47,8 @@ public class ApplicationService {
         }
 
         long acceptedCount = applicationRepository.countByPostAndStatus(post, ApplicationStatus.ACCEPTED);
-        if (post.getCapacity() <= acceptedCount) {
-            throw new CodeFolioRuntimeException(ErrorCode.CAPACITY_FULL);
+        if (post.getStatus() == RecruitmentStatus.COMPLETED || post.getCapacity() <= acceptedCount) {
+            throw new CodeFolioRuntimeException(ErrorCode.RECRUITMENT_CLOSED);
         }
 
         Application application = Application.toEntity(post, user, request.getContent());

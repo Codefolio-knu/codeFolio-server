@@ -1,6 +1,7 @@
 package com.jandy.codeFolio.present.post.dto;
 
 import com.jandy.codeFolio.domain.post.Post;
+import com.jandy.codeFolio.domain.post.RecruitmentStatus;
 import com.jandy.codeFolio.domain.skill.Skill;
 import com.jandy.codeFolio.global.util.Role;
 import com.jandy.codeFolio.present.user.dto.UserResponse;
@@ -20,6 +21,7 @@ public class PostDetailResponse {
     private LocalDate endDate;
     private int capacity;
     private Role role;
+    private RecruitmentStatus status;
     private List<String> skills;
     private UserResponse writer;
 
@@ -31,6 +33,7 @@ public class PostDetailResponse {
                 .endDate(post.getEndDate())
                 .capacity(post.getCapacity())
                 .role(post.getRole())
+                .status(post.getStatus())
                 .skills(post.getSkills().stream().map(Skill::getName).collect(Collectors.toList()))
                 .writer(UserResponse.fromEntity(post.getUser()))
                 .build();
