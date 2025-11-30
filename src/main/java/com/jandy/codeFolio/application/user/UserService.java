@@ -37,6 +37,10 @@ public class UserService {
     @Transactional
     public UserResponse signupUser(UserSignupRequest userSignupRequest, Long githubId, String githubName, String email, String accessToken) {
 
+        userRepository.findByEmail(email).ifPresent(user -> {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_ALREADY_EXISTS);
+        });
+
         User newUser = User.builder()
                 .githubId(githubId)
                 .email(email)

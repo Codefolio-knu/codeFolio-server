@@ -22,6 +22,10 @@ public class ProfessorService {
 
     @Transactional
     public User signup(ProfessorSignupRequest request) {
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            throw new CodeFolioRuntimeException(ErrorCode.USER_ALREADY_EXISTS);
+        });
+
         User professor = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
