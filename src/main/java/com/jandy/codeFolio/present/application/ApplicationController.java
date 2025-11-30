@@ -25,7 +25,7 @@ public class ApplicationController implements ApplicationControllerDocs {
                 .body(ApiResponseWrapper.success(HttpStatus.CREATED, applicationService.createApplication(request.getPostId(), request)));
     }
 
-    @PatchMapping("/{applicationId}")
+    @PostMapping("/{applicationId}/status")
     public ResponseEntity<ApiResponseWrapper<Void>> updateApplicationStatus(
             @PathVariable Long applicationId,
             @RequestBody ApplicationStatusUpdateRequest request,
@@ -34,7 +34,7 @@ public class ApplicationController implements ApplicationControllerDocs {
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, null));
     }
 
-    @PatchMapping("/{applicationId}/content")
+    @PostMapping("/{applicationId}/content")
     public ResponseEntity<ApiResponseWrapper<Void>> updateApplicationContent(
             @PathVariable Long applicationId,
             @RequestBody ApplicationUpdateRequest request) {

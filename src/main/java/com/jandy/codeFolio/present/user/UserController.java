@@ -37,7 +37,7 @@ public class UserController implements UserControllerDocs{
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, response));
     }
 
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/update")
     public ResponseEntity<ApiResponseWrapper<UserResponse>> modifyUser(@RequestBody UserModifyRequest request, @PathVariable Long id) {
         UserResponse modifyUser = userService.modifyUser(id, request);
         return  ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, modifyUser));

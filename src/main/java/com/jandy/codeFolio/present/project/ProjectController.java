@@ -28,7 +28,7 @@ public class ProjectController implements ProjectControllerDocs {
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, projectService.getProjectById(projectId)));
     }
 
-    @PatchMapping("/{projectId}")
+    @PostMapping("/{projectId}/update")
     public ResponseEntity<ApiResponseWrapper<Long>> updateProject(@PathVariable Long userId, @PathVariable Long projectId, @RequestBody ProjectUpdateRequest request) {
         return ResponseEntity.ok(ApiResponseWrapper.success(HttpStatus.OK, projectService.updateProject(projectId, request)));
     }
