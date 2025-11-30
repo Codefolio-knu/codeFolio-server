@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(frontBaseUrl, "http://localhost:5173", "http://localhost:8080")
+                .allowedOrigins(frontBaseUrl, "http://localhost:5173", "http://localhost:8080", "http://codefolio-api.r-e.kr", "https://codefolio-api.r-e.kr")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
