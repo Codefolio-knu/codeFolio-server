@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,22 +47,33 @@ public class SkillService {
         List<GithubRepoResponse> repos = githubService.getRepositories(accessToken);
         long reposApiTime = System.currentTimeMillis() - reposApiStart;
 
-        int totalRepos = repos.size();
-        int processedRepos = 0;
-        int githubApiCallCount = 1;
+        List<GithubRepoResponse> nonForkRepos = repos.stream()
+                .filter(repo -> !repo.isFork())
+                .collect(Collectors.toList());
+
+        // 병렬 페이즈: Virtual Thread로 getLanguages() 동시 호출
+        long parallelApiStart = System.currentTimeMillis();
+        Map<String, Map<String, Long>> repoLanguageMap;
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<CompletableFuture<Map.Entry<String, Map<String, Long>>>> futures = nonForkRepos.stream()
+                    .map(repo -> CompletableFuture.supplyAsync(
+                            () -> Map.entry(repo.getName(), githubService.getLanguages(repo.getLanguagesUrl(), accessToken)),
+                            executor
+                    ))
+                    .collect(Collectors.toList());
+
+            repoLanguageMap = futures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
+        }
+        long parallelApiTime = System.currentTimeMillis() - parallelApiStart;
+
+        // 순차 페이즈: DB 작업 (@Transactional 컨텍스트 유지)
         int dbQueryCount = 1;
-
-        long totalGithubApiTime = reposApiTime;
         long totalDbTime = 0;
-
         Set<Skill> totalUserSkills = new HashSet<>();
 
-        for (GithubRepoResponse repo : repos) {
-            if (repo.isFork()) {
-                continue;
-            }
-            processedRepos++;
-
+        for (GithubRepoResponse repo : nonForkRepos) {
             long dbStart = System.currentTimeMillis();
             Project project = projectRepository.findByUserAndTitle(user, repo.getName())
                     .orElse(Project.builder()
@@ -73,10 +86,7 @@ public class SkillService {
             project.update(repo.getDescription(), repo.getHtmlUrl());
             project.getSkills().clear();
 
-            long langApiStart = System.currentTimeMillis();
-            Map<String, Long> languages = githubService.getLanguages(repo.getLanguagesUrl(), accessToken);
-            totalGithubApiTime += System.currentTimeMillis() - langApiStart;
-            githubApiCallCount++;
+            Map<String, Long> languages = repoLanguageMap.getOrDefault(repo.getName(), Map.of());
 
             for (String langName : languages.keySet()) {
                 long skillDbStart = System.currentTimeMillis();
@@ -102,11 +112,13 @@ public class SkillService {
         totalDbTime += System.currentTimeMillis() - userSaveStart;
         dbQueryCount++;
 
+        long totalGithubApiTime = reposApiTime + parallelApiTime;
         long totalTime = System.currentTimeMillis() - totalStart;
 
-        log.info("=== [BEFORE] syncSkills 성능 측정 (userId={}) ===", userId);
-        log.info("전체 repo 수: {}, 처리된 repo 수(fork 제외): {}", totalRepos, processedRepos);
-        log.info("GitHub API 호출 횟수: {}회 | 누적 시간: {}ms", githubApiCallCount, totalGithubApiTime);
+        log.info("=== [AFTER] syncSkills 성능 측정 (userId={}) ===", userId);
+        log.info("전체 repo 수: {}, 처리된 repo 수(fork 제외): {}", repos.size(), nonForkRepos.size());
+        log.info("GitHub API 호출 횟수: {}회 | 병렬 처리 시간: {}ms (repos 조회: {}ms + 언어 병렬: {}ms)",
+                1 + nonForkRepos.size(), totalGithubApiTime, reposApiTime, parallelApiTime);
         log.info("DB 쿼리 횟수: {}회 | 누적 시간: {}ms", dbQueryCount, totalDbTime);
         log.info("총 실행 시간: {}ms (GitHub API {}ms + DB {}ms + 기타 {}ms)",
                 totalTime, totalGithubApiTime, totalDbTime,
