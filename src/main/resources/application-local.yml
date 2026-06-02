@@ -1,0 +1,15 @@
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        secure: false
+
+spring:
+  oauth2:
+    github:
+      client:
+        redirect-uri: http://localhost:8080/oauth/github/callback
+
+front:
+  base-url: http://localhost:5173
