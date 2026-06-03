@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,42 +69,67 @@ public class SkillService {
         }
         long parallelApiTime = System.currentTimeMillis() - parallelApiStart;
 
-        // 순차 페이즈: DB 작업 (@Transactional 컨텍스트 유지)
-        int dbQueryCount = 1;
+        // 순차 페이즈: 배치 조회 후 DB 작업 (@Transactional 컨텍스트 유지)
         long totalDbTime = 0;
+        int dbQueryCount = 1; // findById
+
+        // 프로젝트 배치 조회 (98회 → 1회)
+        Set<String> repoTitles = nonForkRepos.stream()
+                .map(GithubRepoResponse::getName)
+                .collect(Collectors.toSet());
+        long dbStart = System.currentTimeMillis();
+        Map<String, Project> projectMap = projectRepository.findByUserAndTitleIn(user, repoTitles)
+                .stream().collect(Collectors.toMap(Project::getTitle, p -> p));
+        totalDbTime += System.currentTimeMillis() - dbStart;
+        dbQueryCount++;
+
+        // 언어명 배치 조회 (~207회 → 1회)
+        Set<String> allLanguageNames = repoLanguageMap.values().stream()
+                .flatMap(m -> m.keySet().stream())
+                .collect(Collectors.toSet());
+        long skillFetchStart = System.currentTimeMillis();
+        Map<String, Skill> skillMap = skillRepository.findByNameIn(allLanguageNames)
+                .stream().collect(Collectors.toMap(Skill::getName, s -> s));
+        totalDbTime += System.currentTimeMillis() - skillFetchStart;
+        dbQueryCount++;
+
+        // 신규 스킬만 저장
+        List<Skill> newSkills = allLanguageNames.stream()
+                .filter(name -> !skillMap.containsKey(name))
+                .map(name -> Skill.builder().name(name).build())
+                .collect(Collectors.toList());
+        if (!newSkills.isEmpty()) {
+            long newSkillSaveStart = System.currentTimeMillis();
+            skillRepository.saveAll(newSkills).forEach(s -> skillMap.put(s.getName(), s));
+            totalDbTime += System.currentTimeMillis() - newSkillSaveStart;
+            dbQueryCount++;
+        }
+
+        // 루프: DB 조회 없이 메모리 맵에서 처리
         Set<Skill> totalUserSkills = new HashSet<>();
+        List<Project> projectsToSave = new ArrayList<>();
 
         for (GithubRepoResponse repo : nonForkRepos) {
-            long dbStart = System.currentTimeMillis();
-            Project project = projectRepository.findByUserAndTitle(user, repo.getName())
-                    .orElse(Project.builder()
-                            .user(user)
-                            .title(repo.getName())
-                            .build());
-            totalDbTime += System.currentTimeMillis() - dbStart;
-            dbQueryCount++;
+            Project project = projectMap.getOrDefault(repo.getName(),
+                    Project.builder().user(user).title(repo.getName()).build());
 
             project.update(repo.getDescription(), repo.getHtmlUrl());
             project.getSkills().clear();
 
             Map<String, Long> languages = repoLanguageMap.getOrDefault(repo.getName(), Map.of());
-
             for (String langName : languages.keySet()) {
-                long skillDbStart = System.currentTimeMillis();
-                Skill skill = skillRepository.findByName(langName)
-                        .orElseGet(() -> skillRepository.save(Skill.builder().name(langName).build()));
-                totalDbTime += System.currentTimeMillis() - skillDbStart;
-                dbQueryCount++;
-
+                Skill skill = skillMap.get(langName);
                 project.getSkills().add(skill);
                 totalUserSkills.add(skill);
             }
-
-            long saveStart = System.currentTimeMillis();
-            projectRepository.save(project);
-            totalDbTime += System.currentTimeMillis() - saveStart;
-            dbQueryCount++;
+            projectsToSave.add(project);
         }
+
+        // 프로젝트 일괄 저장 (98회 → 1회 saveAll 호출)
+        long saveStart = System.currentTimeMillis();
+        projectRepository.saveAll(projectsToSave);
+        totalDbTime += System.currentTimeMillis() - saveStart;
+        dbQueryCount++;
 
         long userSaveStart = System.currentTimeMillis();
         user.getSkills().clear();
@@ -115,7 +141,7 @@ public class SkillService {
         long totalGithubApiTime = reposApiTime + parallelApiTime;
         long totalTime = System.currentTimeMillis() - totalStart;
 
-        log.info("=== [AFTER] syncSkills 성능 측정 (userId={}) ===", userId);
+        log.info("=== [AFTER-2] syncSkills 성능 측정 (userId={}) ===", userId);
         log.info("전체 repo 수: {}, 처리된 repo 수(fork 제외): {}", repos.size(), nonForkRepos.size());
         log.info("GitHub API 호출 횟수: {}회 | 병렬 처리 시간: {}ms (repos 조회: {}ms + 언어 병렬: {}ms)",
                 1 + nonForkRepos.size(), totalGithubApiTime, reposApiTime, parallelApiTime);
