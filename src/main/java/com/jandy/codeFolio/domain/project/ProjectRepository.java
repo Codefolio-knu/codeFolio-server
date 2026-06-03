@@ -3,10 +3,12 @@ package com.jandy.codeFolio.domain.project;
 import com.jandy.codeFolio.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByUserAndTitle(User user, String title);
     List<Project> findAllByUser(User user);
+    List<Project> findByUserAndTitleIn(User user, Collection<String> titles);
 }
